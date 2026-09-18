@@ -371,7 +371,12 @@ describe('applyPlatformStatic', () => {
     expect(calls.some((c) => c.method === 'use')).toBe(true);
   });
 
-  it('the static setHeaders callback adds no-cache for index.html only', async () => {
+  // Was "…adds no-cache for index.html only", asserting every other file came
+  // back with no Cache-Control at all. That was the gap, not the contract: with
+  // no header express.static falls back to `max-age=0` and a CDN in front of the
+  // instance caches nothing. setHeaders now answers for every file; which answer
+  // each one gets is pinned in platform.cache-headers.test.ts.
+  it('the static setHeaders callback sets a Cache-Control on every file', async () => {
     process.env.NODE_ENV = 'production';
     const expressMod = (await import('express')).default as unknown as { static: ReturnType<typeof vi.fn> };
     expressMod.static.mockClear();
@@ -381,9 +386,12 @@ describe('applyPlatformStatic', () => {
     const indexRes = makeRes();
     opts.setHeaders(indexRes, '/some/index.html');
     expect(indexRes.headers['Cache-Control']).toBe('no-cache, no-store, must-revalidate');
-    const assetRes = makeRes();
-    opts.setHeaders(assetRes, '/some/app.js');
-    expect(assetRes.headers['Cache-Control']).toBeUndefined();
+    const hashedRes = makeRes();
+    opts.setHeaders(hashedRes, '/some/assets/app-B4JsGSN2.js');
+    expect(hashedRes.headers['Cache-Control']).toBe('public, max-age=31536000, immutable');
+    const plainRes = makeRes();
+    opts.setHeaders(plainRes, '/some/app.js');
+    expect(plainRes.headers['Cache-Control']).toBe('public, max-age=3600');
   });
 });
 

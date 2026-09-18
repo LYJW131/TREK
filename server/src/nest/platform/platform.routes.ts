@@ -192,15 +192,42 @@ export function applyPlatformSpa(app: express.Application): void {
  * index.html), while the index.html catch-all is handled separately (legacy:
  * app.get catch-all; Nest: SpaFallbackFilter). No-op outside production.
  */
+/**
+ * Vite writes the bundle to `assets/` with a content hash in every filename
+ * (`vendor-react-DvgPkayR.js`), so a byte change is a URL change and the old
+ * URL can never come back. Everything else under the public root — icons,
+ * fonts, images, brands, theme-boot.js — keeps its name across deploys.
+ */
+const HASHED_ASSET = /[\\/]assets[\\/]/;
+
+/**
+ * What a file under the public root may be cached for.
+ *
+ * - index.html must never be cached: it names the hashed bundles, so a stale
+ *   copy pins the browser to a version that no longer exists (#121). That was
+ *   the one decision this callback was originally written to carry.
+ * - The hashed files are the other half of that same decision, and it was never
+ *   written down. Left alone they fall through to express.static's default of
+ *   `max-age=0`, so a CDN in front of the instance revalidates every asset on
+ *   every page load and caches nothing — measured on an Aliyun ESA edge, a
+ *   233 KB chunk was re-downloaded in full on four consecutive requests.
+ * - Everything else keeps its name across deploys, so a long TTL would pin a
+ *   replaced file. An hour is enough for an edge to stop asking on every
+ *   request without making a deploy wait on it.
+ */
+export function cacheControlFor(filePath: string): string {
+  if (filePath.endsWith('index.html')) return 'no-cache, no-store, must-revalidate';
+  if (HASHED_ASSET.test(filePath)) return 'public, max-age=31536000, immutable';
+  return 'public, max-age=3600';
+}
+
 export function applyPlatformStatic(app: express.Application): void {
   // Case-sensitive on purpose (legacy parity).
   if (readEnv().app.nodeEnv !== 'production') return;
   app.use(
     express.static(PUBLIC_DIR, {
       setHeaders: (res, filePath) => {
-        if (filePath.endsWith('index.html')) {
-          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        }
+        res.setHeader('Cache-Control', cacheControlFor(filePath));
       },
     }),
   );
