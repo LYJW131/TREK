@@ -1061,6 +1061,48 @@ export class MapsService {
   }
 
   /**
+   * Whether the admin pinned Amap, i.e. it answers place lookups on its own and
+   * the index and OpenStreetMap are not consulted at all.
+   *
+   * True only for an explicit `places_provider = 'amap'`, never for `auto`.
+   * `auto` keeps the incumbent-preserving order this service has always had:
+   * the index and OpenStreetMap answer, and a keyed provider is asked once they
+   * came back with nothing.
+   *
+   * That order is wrong for a mainland-China install, which is what the setting
+   * is for. OpenStreetMap rarely returns *nothing* for a Chinese query — it
+   * returns something irrelevant, and a non-empty list is indistinguishable from
+   * a good one here. Measured: "观前街生煎" (dumplings on Guanqian Street,
+   * Suzhou) answers from OpenStreetMap with a street and a government office in
+   * Nanchang, 600 km away, so Amap — which has the restaurants — is never asked.
+   * Picking Amap explicitly has to mean Amap, or the setting cannot fix the
+   * thing an admin reaches for it to fix.
+   */
+  private amapPinned(): boolean {
+    return this.placesProviderChoice() === 'amap';
+  }
+
+  /**
+   * Whether a pinned Amap should answer for a lookup aimed at this point.
+   *
+   * Amap knows mainland China and is actively misleading outside it: it answers
+   * "Tokyo Station" with a shop in China called KURONO TOKYO and "Eiffel Tower"
+   * with the replica at the Parisian Macao — non-empty, so an "ask Amap, fall
+   * through when empty" rule never falls through and a trip to Paris gets Macao.
+   * The caller's own map is the honest signal for which country the question is
+   * about, and every planner search path sends it (useLocationBias).
+   *
+   * No bias at all keeps Amap: this setting is chosen by a China-based install,
+   * and an unanchored query there is far more likely to be about China. That
+   * case still drops through to the index and OpenStreetMap when Amap answers
+   * with nothing.
+   */
+  private amapCanAnswerHere(point?: { lat: number; lng: number }): boolean {
+    if (!point) return true;
+    return !isOutsideChina(point.lat, point.lng);
+  }
+
+  /**
    * The Amap provider for an `amap:` id, regardless of which provider is
    * currently selected.
    *
@@ -2011,6 +2053,21 @@ export class MapsService {
     const keyed = this.keyedProvider(userId);
     const { key: apiKey, source: keySource } = keyed?.id === 'google' ? keyed : { key: null, source: null };
 
+    // Amap pinned by the admin: it answers, and nobody else is asked while it
+    // has something to say. See amapPinned() for why the fallback order does not
+    // work in China.
+    //
+    // An empty answer still drops through to the index and OpenStreetMap below.
+    // Amap knows mainland China and very little outside it — "東京駅" comes back
+    // with nothing — and a travel planner that returns an empty list for every
+    // foreign city is a worse instance than one that occasionally shows an
+    // OpenStreetMap row. The pin is about precedence, not about deleting the
+    // other sources: as long as Amap has an answer, it is the only one shown.
+    if (keyed?.id === 'amap' && this.amapPinned() && this.amapCanAnswerHere(locationBias)) {
+      const places = await keyed.provider.searchText(query, lang, locationBias);
+      if (places.length > 0) return { places, source: 'amap' };
+    }
+
     // The TREK index answers first, whether or not a Google key exists. It is
     // the only source here that may be stored, works offline as a country
     // package, and costs the caller nothing; a key buys ratings and photos on
@@ -2166,6 +2223,19 @@ export class MapsService {
   ): Promise<MapsAutocompleteResult> {
     const keyed = this.keyedProvider(userId);
     const { key: apiKey, source: keySource } = keyed?.id === 'google' ? keyed : { key: null, source: null };
+
+    // Amap pinned by the admin: it answers here too. Keeping the index ahead of
+    // it would put the same irrelevant OpenStreetMap rows in front of the user
+    // one keystroke earlier than the explicit search does.
+    // The autocomplete bias is a viewport rather than a point; its centre is the
+    // same question asked about the same place.
+    const acCentre = locationBias
+      ? { lat: (locationBias.low.lat + locationBias.high.lat) / 2, lng: (locationBias.low.lng + locationBias.high.lng) / 2 }
+      : undefined;
+    if (keyed?.id === 'amap' && this.amapPinned() && this.amapCanAnswerHere(acCentre)) {
+      const suggestions = await keyed.provider.autocomplete(input, lang, locationBias);
+      if (suggestions.length > 0) return { suggestions, source: 'amap' };
+    }
 
     // This is the path that mattered most. Nominatim's usage policy names
     // autocomplete as unacceptable use in its own words, regardless of rate,
