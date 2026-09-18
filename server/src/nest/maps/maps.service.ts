@@ -13,7 +13,7 @@ import { readEnv, getAppUrl } from '../../app-config';
 import { safeFetchFollow, SsrfBlockedError } from '../../utils/ssrfGuard';
 import { discardBody, exceedsDeclaredLength, readCapped, readCappedText } from '../../utils/cappedFetch';
 import { resolveApiKey, type ApiKeySource } from '../settings/instance-api-keys';
-import { isPlacesProviderChoice, type PlacesProviderChoice } from './providers/places-provider';
+import { isPlacesProviderChoice, type PlacesProviderChoice, type ProviderSuggestion } from './providers/places-provider';
 import {
   AMAP_SHORT_HOSTS,
   AmapPlacesProvider,
@@ -2063,9 +2063,12 @@ export class MapsService {
     // foreign city is a worse instance than one that occasionally shows an
     // OpenStreetMap row. The pin is about precedence, not about deleting the
     // other sources: as long as Amap has an answer, it is the only one shown.
+    // Held so the fallback below reuses it instead of spending a second call on
+    // the same question — the same reason osmAnswer exists further down.
+    let amapAnswer: Record<string, unknown>[] | null = null;
     if (keyed?.id === 'amap' && this.amapPinned() && this.amapCanAnswerHere(locationBias)) {
-      const places = await keyed.provider.searchText(query, lang, locationBias);
-      if (places.length > 0) return { places, source: 'amap' };
+      amapAnswer = await keyed.provider.searchText(query, lang, locationBias);
+      if (amapAnswer.length > 0) return { places: amapAnswer, source: 'amap' };
     }
 
     // The TREK index answers first, whether or not a Google key exists. It is
@@ -2136,9 +2139,12 @@ export class MapsService {
     }
 
     // Amap in the slot Google otherwise holds: asked only once the index and
-    // OpenStreetMap came back empty, exactly like the Google call below.
-    if (keyed?.id === 'amap') {
-      const places = await keyed.provider.searchText(query, lang, locationBias);
+    // OpenStreetMap came back empty, exactly like the Google call below — and
+    // only about China. Outside it Amap is not thin but wrong ("Tokyo Station"
+    // → a shop called KURONO TOKYO), and answering a foreign query from it is
+    // worse than answering it with nothing.
+    if (keyed?.id === 'amap' && this.amapCanAnswerHere(locationBias)) {
+      const places = amapAnswer ?? (await keyed.provider.searchText(query, lang, locationBias));
       return { places, source: 'amap' };
     }
 
@@ -2232,9 +2238,10 @@ export class MapsService {
     const acCentre = locationBias
       ? { lat: (locationBias.low.lat + locationBias.high.lat) / 2, lng: (locationBias.low.lng + locationBias.high.lng) / 2 }
       : undefined;
+    let amapSuggestions: ProviderSuggestion[] | null = null;
     if (keyed?.id === 'amap' && this.amapPinned() && this.amapCanAnswerHere(acCentre)) {
-      const suggestions = await keyed.provider.autocomplete(input, lang, locationBias);
-      if (suggestions.length > 0) return { suggestions, source: 'amap' };
+      amapSuggestions = await keyed.provider.autocomplete(input, lang, locationBias);
+      if (amapSuggestions.length > 0) return { suggestions: amapSuggestions, source: 'amap' };
     }
 
     // This is the path that mattered most. Nominatim's usage policy names
@@ -2313,8 +2320,8 @@ export class MapsService {
       }
     }
 
-    if (keyed?.id === 'amap') {
-      const suggestions = await keyed.provider.autocomplete(input, lang, locationBias);
+    if (keyed?.id === 'amap' && this.amapCanAnswerHere(acCentre)) {
+      const suggestions = amapSuggestions ?? (await keyed.provider.autocomplete(input, lang, locationBias));
       return { suggestions, source: 'amap' };
     }
 

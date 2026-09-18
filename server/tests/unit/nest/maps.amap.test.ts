@@ -688,3 +688,108 @@ describe('MapsService with Amap in the keyed slot', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
+
+// ── An explicit choice answers first ─────────────────────────────────────────
+
+/**
+ * The cases above are about Amap as the *fallback*: asked once the index and
+ * OpenStreetMap had nothing. These are about the setting meaning what it says.
+ *
+ * In mainland China the fallback order never fires, because OpenStreetMap
+ * rarely answers a Chinese query with nothing — it answers with something
+ * irrelevant. So `places_provider = 'amap'` now puts Amap in front, and the
+ * guard that keeps that honest is the caller's own map: a search aimed at Tokyo
+ * is not a China question and goes down the old path.
+ */
+describe('MapsService with Amap pinned by the admin', () => {
+  const SUZHOU = { lat: 31.31, lng: 120.62 };
+  const TOKYO = { lat: 35.68, lng: 139.76 };
+
+  function pinAmap() {
+    mockProviderGet.mockReturnValue({ value: 'amap' });
+    keys({ amap: 'akey' });
+  }
+  /** Nominatim answering "nothing here", which is all these cases need from it. */
+  const emptyOsm = { ok: true, status: 200, json: async () => [] };
+
+  it('AMAP-090: a China-aimed search is answered by Amap alone', async () => {
+    pinAmap();
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValue(ok({ pois: [{ id: 'B1', name: '哑巴生煎(临顿路店)', location: TIANANMEN_LOCATION }] }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await svc.searchPlaces(1, '观前街生煎', undefined, SUZHOU);
+
+    expect(result.source).toBe('amap');
+    expect(result.places[0].amap_poi_id).toBe('amap:B1');
+    // The point of the change: nobody else was asked. The index is left enabled
+    // here on purpose — under the old order it would have answered first.
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(String(fetchSpy.mock.calls[0][0])).toContain('restapi.amap.com');
+  });
+
+  it('AMAP-091: a search aimed outside China does not reach Amap at all', async () => {
+    pinAmap();
+    const fetchSpy = vi.fn().mockResolvedValue(emptyOsm);
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await svc.searchPlaces(1, 'Tokyo Station', undefined, TOKYO);
+
+    expect(result.source).toBe('openstreetmap');
+    const urls = fetchSpy.mock.calls.map(call => String(call[0]));
+    expect(urls.some(u => u.includes('restapi.amap.com'))).toBe(false);
+  });
+
+  it('AMAP-092: an empty Amap answer still drops through to the old path', async () => {
+    pinAmap();
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce(ok({ pois: [] }))
+      .mockResolvedValue(emptyOsm);
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await svc.searchPlaces(1, '东京站', undefined, SUZHOU);
+
+    // Amap first, then the old path — and Amap asked exactly once, because the
+    // fallback below reuses the empty answer instead of paying for it twice.
+    const urls = fetchSpy.mock.calls.map(call => String(call[0]));
+    expect(urls[0]).toContain('restapi.amap.com');
+    expect(urls.filter(u => u.includes('restapi.amap.com'))).toHaveLength(1);
+    expect(urls.some(u => u.includes('nominatim'))).toBe(true);
+    expect(result.places).toHaveLength(0);
+  });
+
+  it('AMAP-093: auto is untouched — the index and OpenStreetMap still answer first', async () => {
+    mockProviderGet.mockReturnValue(undefined); // auto
+    keys({ amap: 'akey' });
+    // Routed by host: under `auto` the old contract still asks Amap once
+    // OpenStreetMap came back empty, and it needs an Amap-shaped body.
+    const fetchSpy = vi.fn(async (url: unknown) =>
+      String(url).includes('restapi.amap.com') ? ok({ pois: [] }) : emptyOsm,
+    );
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await svc.searchPlaces(1, '观前街生煎', undefined, SUZHOU);
+
+    // Amap is reached here only because OpenStreetMap came back empty, which is
+    // exactly the old contract; what matters is that it was not asked first.
+    const urls = fetchSpy.mock.calls.map(call => String(call[0]));
+    expect(urls[0]).not.toContain('restapi.amap.com');
+    expect(result.source).toBeDefined();
+  });
+
+  it('AMAP-094: autocomplete follows the same rule', async () => {
+    pinAmap();
+    const fetchSpy = vi.fn().mockResolvedValue(ok({ tips: [{ id: 'T1', name: '观前街', district: '苏州市' }] }));
+    vi.stubGlobal('fetch', fetchSpy);
+
+    const result = await svc.autocompletePlaces(1, '观前街', undefined, {
+      low: { lat: 31.2, lng: 120.5 },
+      high: { lat: 31.4, lng: 120.7 },
+    });
+
+    expect(result.source).toBe('amap');
+    expect(String(fetchSpy.mock.calls[0][0])).toContain('/v3/assistant/inputtips');
+  });
+});
