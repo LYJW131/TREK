@@ -22,6 +22,13 @@ COPY shared/package.json ./shared/
 COPY client/package.json ./client/
 COPY client/scripts/patch-maplibre.mjs ./client/scripts/
 RUN npm ci --workspace=client
+# npm/cli#4828: installing a single workspace can skip a transitive package's
+# optional platform binding. Vite 8 runs on rolldown, whose native binding is
+# exactly such an optional dep, so `vite build` dies here with "Cannot find
+# native binding" even though package-lock.json lists every platform. Pinned to
+# the rolldown version the lockfile resolves, and to musl because this stage is
+# alpine; --no-save keeps the lockfile untouched.
+RUN npm i --no-save --no-package-lock @rolldown/binding-linux-x64-musl@1.1.2
 COPY --from=shared-builder /app/shared/dist ./shared/dist
 COPY client/ ./client/
 RUN npm run build --workspace=client
