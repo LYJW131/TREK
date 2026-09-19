@@ -80,6 +80,9 @@ export const MANAGED_LOCKED_SETTING_KEYS = [
   // The operator's for the same reason maps_api_key is: Amap bills the account
   // the key belongs to, and on a managed install that account is theirs.
   'amap_api_key',
+  // The JS API key is a second Amap credential, billed to the same account and
+  // public in the browser exactly like carto_api_key — locked for the same reason.
+  'amap_js_key',
   'carto_api_key',
   'llm_api_key',
   'llm_base_url',

@@ -53,9 +53,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API key',
   'settings.mapAmapJsKeyHint':
     'For the 高德矢量 basemap. A separate key from the Web 服务 one — create it as 「Web端(JS API)」 at',
-  'settings.mapAmapJsSecurity': 'Amap security code (安全密钥)',
   'settings.mapAmapJsSecurityHint':
-    'Issued with the JS API key since 2021. Without it every request the map makes is refused and the basemap stays blank.',
+    'Its 安全密钥 is not set here. Amap calls putting that in the page unsafe for production, so the operator sets AMAP_JS_SECURITY_CODE on the server instead.',
   'settings.mapCartoKeyLink': 'carto.com basemap API key',
   'settings.mapCartoKeyMissing':
     'This template is a CARTO basemap. Without a key CARTO stamps "API KEY REQUIRED" onto every tile. Until you enter one, TREK shows the default basemap instead.',

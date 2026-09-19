@@ -8,17 +8,22 @@ import { readEnv } from '../../app-config';
  * Exported so a caller that hands settings to somebody else can assert its own
  * allow-list against the live values rather than a copy: a sixth key added here
  * has to fail that assertion, which a hand-typed list would not.
+ *
+ * `amap_js_key` is in here and NOT in MASKED_SETTING_KEYS, like carto_api_key:
+ * the browser has to read it to load the Amap SDK at all, so masking it would
+ * only break the map. Its 安全密钥 is deliberately absent — that one is a server
+ * secret (AMAP_JS_SECURITY_CODE) reached through AmapProxyController, and a
+ * user setting is exactly what it must not be.
+ *
+ * Keep prose out of the array itself: the encryption-rotation parity test reads
+ * this list off the source and splits it on commas (ROTPAR-007).
  */
 export const ENCRYPTED_SETTING_KEYS = new Set([
   'webhook_url',
   'ntfy_token',
   'mapbox_access_token',
   'carto_api_key',
-  // Amap's JS API key and its 安全密钥. Encrypted at rest and returned in the
-  // clear, exactly like carto_api_key: the browser has to read both to load the
-  // SDK at all, so masking them would only break the map.
   'amap_js_key',
-  'amap_js_security_code',
   'llm_api_key',
 ]);
 // Encrypted keys that are masked (••••••••) when returned to the client.
@@ -63,11 +68,10 @@ export const DEFAULTABLE_USER_SETTING_KEYS = [
   // the key is per-instance rather than per-person: defaultable so one admin
   // value clears the watermark for everybody at once.
   'carto_api_key',
-  // The Amap JS API credentials are a property of the deployment rather than a
-  // taste — one admin value gives every member in China the vector basemap —
-  // so they are defaultable the same way the CARTO key is.
+  // The Amap JS API key is a property of the deployment rather than a taste —
+  // one admin value gives every member in China the vector basemap — so it is
+  // defaultable the same way the CARTO key is.
   'amap_js_key',
-  'amap_js_security_code',
   // Instance-wide GL map defaults: admins can set Mapbox token/style or
   // tokenless MapLibre/OpenFreeMap style defaults for new users (#920).
   'map_provider',

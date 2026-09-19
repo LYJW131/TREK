@@ -45,9 +45,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API-sleutel',
   'settings.mapAmapJsKeyHint':
     'Voor de vectorbasiskaart van Amap. Een andere sleutel dan die voor «Web 服务» — maak hem aan als type «Web端(JS API)» op',
-  'settings.mapAmapJsSecurity': 'Amap-beveiligingscode',
   'settings.mapAmapJsSecurityHint':
-    'Wordt sinds 2021 samen met de JS API-sleutel uitgegeven. Zonder deze code wordt elk verzoek van de kaart geweigerd en blijft de basiskaart leeg.',
+    'De bijbehorende 安全密钥 stel je hier niet in. Amap vindt hem in de pagina ongeschikt voor productie, dus zet de beheerder AMAP_JS_SECURITY_CODE op de server.',
   'settings.mapCartoKeyLink': 'carto.com basemap API-sleutel',
   'settings.mapCartoKeyMissing':
     'Deze sjabloon is een CARTO-basiskaart. Zonder sleutel drukt CARTO "API KEY REQUIRED" op elke tegel. Zolang er geen sleutel is, toont TREK de standaardbasiskaart.',

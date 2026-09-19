@@ -150,6 +150,7 @@ export const envSchema = z.object({
   AMAP_API_BASE: url,
   AMAP_API_KEY: anyString,
   AMAP_API_SECRET: anyString,
+  AMAP_JS_SECURITY_CODE: anyString,
   MAPBOX_ACCESS_TOKEN: anyString,
   CARTO_API_KEY: anyString,
   DEMO_MODE: boolStr,

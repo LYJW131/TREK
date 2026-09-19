@@ -45,9 +45,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API 키',
   'settings.mapAmapJsKeyHint':
     'Amap 벡터 배경지도용입니다. 「Web 服务」 키와는 다른 키로, 「Web端(JS API)」 유형으로 발급받으세요:',
-  'settings.mapAmapJsSecurity': 'Amap 보안 코드(安全密钥)',
   'settings.mapAmapJsSecurityHint':
-    '2021년부터 JS API 키와 함께 발급됩니다. 없으면 지도의 모든 요청이 거부되어 배경지도가 비어 있게 됩니다.',
+    '짝이 되는 安全密钥는 여기서 설정하지 않습니다. Amap은 이를 페이지에 넣는 방식을 운영 환경에 부적합하다고 하므로, 서버의 AMAP_JS_SECURITY_CODE로 지정합니다.',
   'settings.mapCartoKeyLink': 'carto.com 배경 지도 API 키',
   'settings.mapCartoKeyMissing':
     '이 템플릿은 CARTO 배경 지도입니다. 키가 없으면 CARTO가 모든 타일에 "API KEY REQUIRED"를 새깁니다. 키를 입력하기 전까지 TREK은 기본 배경 지도를 표시합니다.',

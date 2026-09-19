@@ -44,9 +44,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Kunci JS API Amap',
   'settings.mapAmapJsKeyHint':
     'Untuk peta dasar vektor Amap. Kunci ini berbeda dari kunci «Web 服务» — buat dengan tipe «Web端(JS API)» di',
-  'settings.mapAmapJsSecurity': 'Kode keamanan Amap',
   'settings.mapAmapJsSecurityHint':
-    'Diterbitkan bersama kunci JS API sejak 2021. Tanpanya setiap permintaan peta ditolak dan peta dasar tetap kosong.',
+    '安全密钥 pasangannya tidak diatur di sini. Amap menilai menaruhnya di halaman tidak layak untuk produksi, jadi operator menyetel AMAP_JS_SECURITY_CODE di server.',
   'settings.mapCartoKeyLink': 'kunci API peta dasar carto.com',
   'settings.mapCartoKeyMissing':
     'Templat ini adalah peta dasar CARTO. Tanpa kunci, CARTO mencetak "API KEY REQUIRED" di setiap ubin. Sampai kunci dimasukkan, TREK menampilkan peta dasar bawaan.',

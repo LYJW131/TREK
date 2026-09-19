@@ -44,9 +44,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': '高德 JS API Key',
   'settings.mapAmapJsKeyHint':
     '用於「高德向量」底圖。和 Web 服務 Key 不是同一個 —— 要在主控台以「Web端(JS API)」類型新建，網址：',
-  'settings.mapAmapJsSecurity': '高德安全金鑰',
   'settings.mapAmapJsSecurityHint':
-    '2021 年起與 JS API Key 一併發給。未填寫時地圖發出的每個請求都會被拒絕，底圖會是空白。',
+    '配套的安全金鑰不在這裡填。高德明確表示把它寫進頁面不適合正式環境，因此改由伺服器端的 AMAP_JS_SECURITY_CODE 提供。',
   'settings.mapCartoKeyLink': 'carto.com 底圖 API 金鑰',
   'settings.mapCartoKeyMissing': '此範本是 CARTO 底圖。沒有金鑰時，CARTO 會在每個圖磚上印上 "API KEY REQUIRED"。 在輸入金鑰之前，TREK 會顯示預設底圖。',
   'settings.mapStyle': '地圖樣式',

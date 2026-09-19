@@ -162,6 +162,18 @@ export function deriveMaps(raw: RawEnv) {
      * whenever the operator's key was issued that way.
      */
     amapApiSecret: raw.AMAP_API_SECRET || undefined,
+    /**
+     * The 安全密钥 that Amap issues with a JS API key, and a server-side secret
+     * on purpose.
+     *
+     * Amap documents two ways to supply it: write it into the page next to the
+     * SDK script, or keep it here and let the browser reach Amap's services
+     * through a proxy that appends it. Their own docs call the first one
+     * "不建议在生产环境使用（不安全）" — anybody who views source has the
+     * operator's credential. So it never reaches the client: AmapProxyController
+     * is the `/_AMapService` prefix the SDK is pointed at instead.
+     */
+    amapJsSecurityCode: raw.AMAP_JS_SECURITY_CODE || undefined,
     /** Public pk.* token shipped with a managed instance; reaches the browser by design. */
     mapboxToken: raw.MAPBOX_ACCESS_TOKEN || undefined,
     /** CARTO basemap key; without one the tiles come back watermarked (#2054). Public too. */

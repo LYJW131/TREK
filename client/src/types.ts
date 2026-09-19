@@ -216,9 +216,12 @@ export interface Settings {
    * type, for place search and transit, and the JS API rejects it. This one is
    * 「Web端(JS API)」 type and is public by design — it ships in the page, and
    * Amap's protection for it is the domain allow-list set on the key itself.
+   *
+   * Its 安全密钥 is deliberately NOT here. That one is a secret, it stays on the
+   * server as AMAP_JS_SECURITY_CODE, and the SDK reaches it through the
+   * `/_AMapService` proxy rather than being handed it.
    */
   amap_js_key?: string
-  amap_js_security_code?: string
   mapbox_access_token?: string
   mapbox_style?: string
   maplibre_style?: string

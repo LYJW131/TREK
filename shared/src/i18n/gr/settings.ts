@@ -47,9 +47,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Κλειδί JS API του Amap',
   'settings.mapAmapJsKeyHint':
     'Για τον διανυσματικό χάρτη βάσης του Amap. Διαφορετικό κλειδί από το «Web 服务» — δημιουργήστε το ως «Web端(JS API)» στο',
-  'settings.mapAmapJsSecurity': 'Κωδικός ασφαλείας Amap',
   'settings.mapAmapJsSecurityHint':
-    'Εκδίδεται μαζί με το κλειδί JS API από το 2021. Χωρίς αυτόν κάθε αίτημα του χάρτη απορρίπτεται και ο χάρτης βάσης μένει κενός.',
+    'Το συνοδευτικό 安全密钥 δεν ορίζεται εδώ. Το Amap θεωρεί ακατάλληλο για παραγωγή να μπαίνει μέσα στη σελίδα, οπότε ο διαχειριστής το ορίζει στον διακομιστή ως AMAP_JS_SECURITY_CODE.',
   'settings.mapCartoKeyLink': 'κλειδί API βασικών χαρτών carto.com',
   'settings.mapCartoKeyMissing':
     'Αυτό το πρότυπο είναι βασικός χάρτης CARTO. Χωρίς κλειδί, η CARTO τυπώνει "API KEY REQUIRED" σε κάθε πλακίδιο. Μέχρι να εισαγάγετε κλειδί, το TREK εμφανίζει τον προεπιλεγμένο βασικό χάρτη.',

@@ -45,9 +45,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Ключ JS API Amap',
   'settings.mapAmapJsKeyHint':
     'Для векторной подложки Amap. Это не тот ключ, что «Web 服务», — создайте его с типом «Web端(JS API)» на',
-  'settings.mapAmapJsSecurity': 'Код безопасности Amap',
   'settings.mapAmapJsSecurityHint':
-    'Выдаётся вместе с ключом JS API с 2021 года. Без него каждый запрос карты отклоняется, а подложка остаётся пустой.',
+    'Соответствующий 安全密钥 задаётся не здесь. Amap считает его размещение в странице непригодным для продакшена, поэтому оператор задаёт AMAP_JS_SECURITY_CODE на сервере.',
   'settings.mapCartoKeyLink': 'ключ API базовых карт carto.com',
   'settings.mapCartoKeyMissing':
     'Этот шаблон является базовой картой CARTO. Без ключа CARTO наносит "API KEY REQUIRED" на каждый тайл. Пока ключ не указан, TREK показывает базовую карту по умолчанию.',

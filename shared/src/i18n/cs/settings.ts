@@ -44,9 +44,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Klíč JS API Amap',
   'settings.mapAmapJsKeyHint':
     'Pro vektorovou podkladovou mapu Amap. Je to jiný klíč než «Web 服务» — vytvořte jej jako typ «Web端(JS API)» na',
-  'settings.mapAmapJsSecurity': 'Bezpečnostní kód Amap',
   'settings.mapAmapJsSecurityHint':
-    'Vydává se spolu s klíčem JS API od roku 2021. Bez něj je každý požadavek mapy odmítnut a podklad zůstane prázdný.',
+    'Související 安全密钥 se zde nenastavuje. Amap považuje jeho umístění do stránky za nevhodné pro produkci, proto jej provozovatel nastaví na serveru jako AMAP_JS_SECURITY_CODE.',
   'settings.mapCartoKeyLink': 'carto.com API klíč pro podkladové mapy',
   'settings.mapCartoKeyMissing':
     'Tato šablona je podkladová mapa CARTO. Bez klíče CARTO vypálí do každé dlaždice nápis "API KEY REQUIRED". Dokud klíč nezadáte, TREK zobrazuje výchozí podkladovou mapu.',

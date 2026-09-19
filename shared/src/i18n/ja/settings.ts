@@ -44,9 +44,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': '高德 JS API キー',
   'settings.mapAmapJsKeyHint':
     'Amap のベクター地図用。「Web 服务」キーとは別のキーで、「Web端(JS API)」タイプで作成します。作成先：',
-  'settings.mapAmapJsSecurity': '高德 セキュリティコード（安全密钥）',
   'settings.mapAmapJsSecurityHint':
-    '2021 年以降、JS API キーと一緒に発行されます。未設定だと地図のリクエストはすべて拒否され、背景地図は空白のままです。',
+    '対になる安全密钥はここでは設定しません。高德はページに書く方式を本番向きではないとしているため、サーバー側の AMAP_JS_SECURITY_CODE で指定します。',
   'settings.mapCartoKeyLink': 'carto.com ベースマップ API キー',
   'settings.mapCartoKeyMissing':
     'このテンプレートは CARTO のベースマップです。キーがないと CARTO はすべてのタイルに "API KEY REQUIRED" を焼き込みます。 キーを入力するまで、TREK は既定のベースマップを表示します。',

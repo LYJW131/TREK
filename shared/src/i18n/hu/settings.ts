@@ -45,9 +45,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API-kulcs',
   'settings.mapAmapJsKeyHint':
     'Az Amap vektoros alaptérképhez. Más kulcs, mint a „Web 服务” — hozd létre „Web端(JS API)” típusúként itt:',
-  'settings.mapAmapJsSecurity': 'Amap biztonsági kód',
   'settings.mapAmapJsSecurityHint':
-    '2021 óta a JS API-kulccsal együtt adják ki. Nélküle a térkép minden kérését elutasítják, és az alaptérkép üres marad.',
+    'A hozzá tartozó 安全密钥 nem itt állítható be. Az Amap az oldalba írását élesben nem tartja megfelelőnek, ezért az üzemeltető a szerveren adja meg AMAP_JS_SECURITY_CODE néven.',
   'settings.mapCartoKeyLink': 'carto.com alaptérkép API-kulcs',
   'settings.mapCartoKeyMissing':
     'Ez a sablon CARTO alaptérkép. Kulcs nélkül a CARTO minden csempére ráírja: "API KEY REQUIRED". Amíg nincs kulcs megadva, a TREK az alapértelmezett alaptérképet mutatja.',

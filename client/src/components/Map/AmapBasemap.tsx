@@ -40,7 +40,6 @@ const SYNC_EVENTS = 'move zoom moveend zoomend resize'
 export function AmapBasemap() {
   const map = useMap()
   const key = useSettingsStore(s => s.settings.amap_js_key || '')
-  const securityCode = useSettingsStore(s => s.settings.amap_js_security_code || '')
   // useIsDark, not `settings.dark_mode`: that field is `boolean | string` and
   // carries 'auto' and 'off' as strings, both of which are truthy — reading it
   // directly paints the dark basemap under a light app. The hook reads the
@@ -85,7 +84,7 @@ export function AmapBasemap() {
       amap.setZoomAndCenter(map.getZoom(), [gcj.lng, gcj.lat], true)
     }
 
-    loadAmapSdk(key, securityCode)
+    loadAmapSdk(key)
       .then((AMap) => {
         if (cancelled) return
         const centre = map.getCenter()
@@ -143,7 +142,7 @@ export function AmapBasemap() {
       host.remove()
       container.style.background = previousBackground
     }
-  }, [map, key, securityCode, dark])
+  }, [map, key, dark])
 
   return null
 }

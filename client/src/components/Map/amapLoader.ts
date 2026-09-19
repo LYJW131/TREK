@@ -10,10 +10,12 @@
  *
  *  - **The key is a different key.** `AMAP_API_KEY` on the server is a
  *    「Web 服务」key and the JS API refuses it. This one has to be created as
- *    「Web端(JS API)」, and since 2021 it also needs a 安全密钥 (`securityJsCode`)
- *    set on `window._AMapSecurityConfig` BEFORE the script runs. Set it after and
- *    every request the map makes comes back INVALID_USER_SCODE, with a map that
- *    simply stays blank.
+ *    「Web端(JS API)」, and since 2021 every key has a 安全密钥 beside it. That
+ *    second one does NOT ship here: Amap's own documentation calls writing it
+ *    into the page 「不建议在生产环境使用（不安全）」, so the SDK is pointed at
+ *    `/_AMapService` instead and the server appends it (AmapProxyController).
+ *    The pointer has to be set BEFORE the script runs; set afterwards it is
+ *    ignored in silence and the map stays blank with nothing to catch.
  *  - **It is a credential that belongs in the browser.** Unlike the Web 服务 key
  *    this one is public by design — it ships in the page. Amap's protection is
  *    the domain allow-list on the key itself, which is the operator's to set.
@@ -36,9 +38,17 @@ export interface AmapMap {
 declare global {
   interface Window {
     AMap?: AmapGlobal;
-    _AMapSecurityConfig?: { securityJsCode: string };
+    _AMapSecurityConfig?: { serviceHost?: string; securityJsCode?: string };
   }
 }
+
+/**
+ * Amap's fixed prefix for the proxy that holds the 安全密钥.
+ *
+ * Not a name TREK picked and not one it may change — the SDK asks here and
+ * nowhere else. Server side it is AmapProxyController.
+ */
+const SERVICE_PREFIX = '/_AMapService';
 
 const SDK_VERSION = '2.0';
 const SDK_ORIGIN = 'https://webapi.amap.com';
@@ -52,14 +62,15 @@ const SDK_ORIGIN = 'https://webapi.amap.com';
  */
 let pending: { key: string; promise: Promise<AmapGlobal> } | null = null;
 
-export function loadAmapSdk(key: string, securityCode?: string): Promise<AmapGlobal> {
+export function loadAmapSdk(key: string): Promise<AmapGlobal> {
   if (!key) return Promise.reject(new Error('no Amap JS API key configured'));
   if (pending?.key === key) return pending.promise;
   if (window.AMap) return Promise.resolve(window.AMap);
 
   const promise = new Promise<AmapGlobal>((resolve, reject) => {
-    // Before the script, always: the SDK reads this global while it initialises.
-    if (securityCode) window._AMapSecurityConfig = { securityJsCode: securityCode };
+    // Before the script, always: the SDK reads this global while it initialises,
+    // and a value set afterwards is silently ignored.
+    window._AMapSecurityConfig = { serviceHost: `${window.location.origin}${SERVICE_PREFIX}` };
 
     const script = document.createElement('script');
     script.src = `${SDK_ORIGIN}/maps?v=${SDK_VERSION}&key=${encodeURIComponent(key)}`;

@@ -45,9 +45,8 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API anahtarı',
   'settings.mapAmapJsKeyHint':
     'Amap vektör altlığı için. «Web 服务» anahtarından farklıdır — «Web端(JS API)» türünde oluşturun:',
-  'settings.mapAmapJsSecurity': 'Amap güvenlik kodu',
   'settings.mapAmapJsSecurityHint':
-    '2021’den beri JS API anahtarıyla birlikte veriliyor. Olmadan haritanın her isteği reddedilir ve altlık boş kalır.',
+    'Eşlik eden 安全密钥 burada ayarlanmaz. Amap onu sayfaya koymayı üretim için uygunsuz sayar; bu yüzden işletmeci sunucuda AMAP_JS_SECURITY_CODE olarak tanımlar.',
   'settings.mapCartoKeyLink': 'carto.com temel harita API anahtarı',
   'settings.mapCartoKeyMissing':
     'Bu şablon bir CARTO temel haritası. Anahtar olmadan CARTO her karoya "API KEY REQUIRED" damgası basar. Anahtar girilene kadar TREK varsayılan temel haritayı gösterir.',
