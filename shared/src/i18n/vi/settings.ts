@@ -45,8 +45,9 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Khóa JS API của Amap',
   'settings.mapAmapJsKeyHint':
     'Dùng cho bản đồ nền vector của Amap. Đây là khóa khác với khóa «Web 服务» — hãy tạo theo loại «Web端(JS API)» tại',
+  'settings.mapAmapJsSecurity': 'Mã bảo mật Amap',
   'settings.mapAmapJsSecurityHint':
-    '安全密钥 đi kèm không đặt ở đây. Amap cho rằng để nó trong trang là không phù hợp với môi trường thật, nên người vận hành đặt AMAP_JS_SECURITY_CODE ở phía máy chủ.',
+    'Được cấp kèm khóa JS API. Nó không bao giờ tới trình duyệt: máy chủ giữ và gắn vào các lệnh gọi dịch vụ của Amap — đúng như tài liệu của Amap khuyến nghị thay vì để trong trang.',
   'settings.mapCartoKeyLink': 'khóa API bản đồ nền carto.com',
   'settings.mapCartoKeyMissing':
     'Mẫu này là bản đồ nền CARTO. Không có khóa, CARTO in "API KEY REQUIRED" lên mọi ô bản đồ. Cho đến khi bạn nhập khóa, TREK hiển thị bản đồ nền mặc định.',

@@ -45,8 +45,9 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Clé JS API Amap',
   'settings.mapAmapJsKeyHint':
     'Pour le fond de carte vectoriel Amap. Une clé distincte de celle « Web 服务 » — créez-la en type « Web端(JS API) » sur',
+  'settings.mapAmapJsSecurity': 'Code de sécurité Amap',
   'settings.mapAmapJsSecurityHint':
-    "Le 安全密钥 associé ne se règle pas ici. Amap juge son placement dans la page inadapté à la production ; l'exploitant définit donc AMAP_JS_SECURITY_CODE côté serveur.",
+    "Fourni avec la clé JS API. Il n'atteint jamais le navigateur : le serveur le conserve et l'ajoute aux appels de service d'Amap — ce que la documentation d'Amap recommande plutôt que de le placer dans la page.",
   'settings.mapCartoKeyLink': "clé d'API de fonds de carte carto.com",
   'settings.mapCartoKeyMissing':
     'Ce modèle est un fond de carte CARTO. Sans clé, CARTO appose "API KEY REQUIRED" sur chaque tuile. Tant que la clé manque, TREK affiche le fond de carte par défaut.',

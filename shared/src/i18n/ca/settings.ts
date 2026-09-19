@@ -34,8 +34,9 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Clau de JS API d’Amap',
   'settings.mapAmapJsKeyHint':
     'Per al mapa base vectorial d’Amap. És diferent de la clau «Web 服务»: crea-la del tipus «Web端(JS API)» a',
+  'settings.mapAmapJsSecurity': 'Codi de seguretat d’Amap',
   'settings.mapAmapJsSecurityHint':
-    "El 安全密钥 associat no es configura aquí. Amap considera que posar-lo a la pàgina no és adequat per a producció, així que l'operador defineix AMAP_JS_SECURITY_CODE al servidor.",
+    'S’emet amb la clau de JS API. No arriba mai al navegador: el servidor el guarda i l’afegeix a les crides de servei d’Amap, que és el que recomana la seva documentació en lloc de posar-lo a la pàgina.',
   'settings.mapCartoKeyLink': "clau d'API de mapes base de carto.com",
   'settings.mapCartoKeyMissing':
     'Aquesta plantilla és un mapa base de CARTO. Sense clau, CARTO estampa "API KEY REQUIRED" a cada tessel·la. Mentre no hi hagi clau, TREK mostra el mapa base per defecte.',

@@ -184,6 +184,7 @@ export default function MapSettingsTab(): React.ReactElement {
   const [mapboxToken, setMapboxToken] = useState<string>(settings.mapbox_access_token || '')
   const [cartoKey, setCartoKey] = useState<string>(settings.carto_api_key || '')
   const [amapJsKey, setAmapJsKey] = useState<string>(settings.amap_js_key || '')
+  const [amapJsSecurity, setAmapJsSecurity] = useState<string>(settings.amap_js_security_code || '')
   const [mapboxStyle, setMapboxStyle] = useState<string>(styleForProvider(initialProvider, slotStyle(initialProvider, settings)))
   const [mapbox3d, setMapbox3d] = useState<boolean>(settings.mapbox_3d_enabled !== false)
   const [mapboxQuality, setMapboxQuality] = useState<boolean>(settings.mapbox_quality_mode === true)
@@ -197,6 +198,7 @@ export default function MapSettingsTab(): React.ReactElement {
     setMapboxToken(settings.mapbox_access_token || '')
     setCartoKey(settings.carto_api_key || '')
     setAmapJsKey(settings.amap_js_key || '')
+    setAmapJsSecurity(settings.amap_js_security_code || '')
     setMapboxStyle(styleForProvider(nextProvider, slotStyle(nextProvider, settings)))
     setMapbox3d(settings.mapbox_3d_enabled !== false)
     setMapboxQuality(settings.mapbox_quality_mode === true)
@@ -233,6 +235,9 @@ export default function MapSettingsTab(): React.ReactElement {
         mapbox_access_token: mapboxToken,
         carto_api_key: cartoKey,
         amap_js_key: amapJsKey,
+        // Arrives as •••••••• when one is stored; saving it back is a documented
+        // no-op server-side, so the field can round-trip without a second form.
+        amap_js_security_code: amapJsSecurity,
         ...stylePatch,
         mapbox_3d_enabled: mapbox3d,
         mapbox_quality_mode: mapboxQuality,
@@ -392,10 +397,20 @@ export default function MapSettingsTab(): React.ReactElement {
                 console.amap.com
               </a>
             </p>
-            {/* The 安全密钥 that comes with the key is NOT asked for here: Amap
-                calls putting it in the page unsafe for production, so it is a
-                server-side value (AMAP_JS_SECURITY_CODE) and the SDK reaches it
-                through the /_AMapService proxy. */}
+          </div>
+          <div>
+            {/* The 安全密钥 lives beside the key it came with, and goes nowhere near
+                the browser: it is masked on read, and the only thing that ever
+                sends it anywhere is the /_AMapService proxy. */}
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('settings.mapAmapJsSecurity')}</label>
+            <input
+              type="text"
+              value={amapJsSecurity}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmapJsSecurity(e.target.value)}
+              spellCheck={false}
+              autoComplete="off"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+            />
             <p className="text-xs text-slate-400 mt-1">{t('settings.mapAmapJsSecurityHint')}</p>
           </div>
         </div>

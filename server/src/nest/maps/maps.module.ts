@@ -6,6 +6,7 @@ import { MapsMcp } from './maps.mcp';
 import { PlacePhotosModule } from '../place-photos/place-photos.module';
 import { StorageModule } from '../storage/storage.module';
 import { RateLimitModule } from '../common/rate-limit.module';
+import { SettingsModule } from '../settings/settings.module';
 
 /**
  * Maps / geo domain (L3 leaf module). Registered in AppModule. Exports
@@ -21,7 +22,8 @@ import { RateLimitModule } from '../common/rate-limit.module';
 @Module({
   // RateLimitModule: AmapProxyController holds a credential and fans out to a
   // third party, which is exactly what the limiter is for.
-  imports: [PlacePhotosModule, StorageModule, RateLimitModule],
+  // SettingsModule: the proxy resolves the Amap 安全密钥 out of settings.
+  imports: [PlacePhotosModule, StorageModule, RateLimitModule, SettingsModule],
   controllers: [MapsController, AmapProxyController],
   providers: [MapsService, MapsMcp],
   exports: [MapsService],

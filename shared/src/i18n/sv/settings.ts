@@ -47,8 +47,9 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'Amap JS API-nyckel',
   'settings.mapAmapJsKeyHint':
     'För Amaps vektorbakgrundskarta. En annan nyckel än «Web 服务» — skapa den som typen «Web端(JS API)» på',
+  'settings.mapAmapJsSecurity': 'Amap-säkerhetskod',
   'settings.mapAmapJsSecurityHint':
-    'Den tillhörande 安全密钥 ställs inte in här. Amap anser att den i sidan är olämplig i produktion, så operatören sätter AMAP_JS_SECURITY_CODE på servern.',
+    'Utfärdas tillsammans med JS API-nyckeln. Den når aldrig webbläsaren: servern håller den och lägger till den i Amaps egna tjänsteanrop — vilket Amaps dokumentation rekommenderar framför att lägga den i sidan.',
   'settings.mapCartoKeyLink': 'API-nyckel för bakgrundskartor på carto.com',
   'settings.mapCartoKeyMissing':
     'Den här mallen är en CARTO-bakgrundskarta. Utan nyckel stämplar CARTO "API KEY REQUIRED" på varje ruta. Tills en nyckel anges visar TREK standardbakgrundskartan.',

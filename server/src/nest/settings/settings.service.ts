@@ -9,14 +9,15 @@ import { readEnv } from '../../app-config';
  * allow-list against the live values rather than a copy: a sixth key added here
  * has to fail that assertion, which a hand-typed list would not.
  *
- * `amap_js_key` is in here and NOT in MASKED_SETTING_KEYS, like carto_api_key:
- * the browser has to read it to load the Amap SDK at all, so masking it would
- * only break the map. Its 安全密钥 is deliberately absent — that one is a server
- * secret (AMAP_JS_SECURITY_CODE) reached through AmapProxyController, and a
- * user setting is exactly what it must not be.
+ * The two Amap JS credentials are configured in the same place and travel
+ * differently, which is the whole point of them being one in this set and both
+ * in the next: `amap_js_key` is NOT masked, because the browser has to read it
+ * to load the SDK at all, and it is public by design. `amap_js_security_code`
+ * IS masked and therefore never leaves the server — AmapProxyController reads
+ * it with resolveSecretSetting and appends it to Amap's own service calls.
  *
- * Keep prose out of the array itself: the encryption-rotation parity test reads
- * this list off the source and splits it on commas (ROTPAR-007).
+ * Keep prose out of the arrays themselves: the encryption-rotation parity test
+ * reads this list off the source and splits it on commas (ROTPAR-007).
  */
 export const ENCRYPTED_SETTING_KEYS = new Set([
   'webhook_url',
@@ -24,11 +25,12 @@ export const ENCRYPTED_SETTING_KEYS = new Set([
   'mapbox_access_token',
   'carto_api_key',
   'amap_js_key',
+  'amap_js_security_code',
   'llm_api_key',
 ]);
 // Encrypted keys that are masked (••••••••) when returned to the client.
 // Keys not in this set but in ENCRYPTED_SETTING_KEYS are decrypted and returned.
-export const MASKED_SETTING_KEYS = new Set(['webhook_url', 'ntfy_token', 'llm_api_key']);
+export const MASKED_SETTING_KEYS = new Set(['webhook_url', 'ntfy_token', 'amap_js_security_code', 'llm_api_key']);
 
 export const DEFAULTABLE_USER_SETTING_KEYS = [
   'temperature_unit',
@@ -72,6 +74,7 @@ export const DEFAULTABLE_USER_SETTING_KEYS = [
   // one admin value gives every member in China the vector basemap — so it is
   // defaultable the same way the CARTO key is.
   'amap_js_key',
+  'amap_js_security_code',
   // Instance-wide GL map defaults: admins can set Mapbox token/style or
   // tokenless MapLibre/OpenFreeMap style defaults for new users (#920).
   'map_provider',
@@ -323,6 +326,23 @@ export class SettingsService {
    * returns the plaintext — for server-side use only (e.g. the LLM config
    * resolver needs the real API key). Returns null when unset.
    */
+  /**
+   * A secret setting in the order the operator expects it to win.
+   *
+   * Env first, so a compose file pins it for the whole deployment; then the
+   * caller's own row; then the admin default, which is what makes one value
+   * cover every member. Same shape as resolveApiKey for the instance API keys —
+   * this one reads settings rather than user columns, because the value it
+   * resolves has no column to read.
+   */
+  resolveSecretSetting(userId: number, key: string, operatorValue?: string): string | null {
+    if (operatorValue) return operatorValue;
+    const own = this.getDecryptedUserSetting(userId, key);
+    if (own) return own;
+    const fallback = this.getAdminUserDefaults()[key];
+    return typeof fallback === 'string' && fallback ? fallback : null;
+  }
+
   getDecryptedUserSetting(userId: number, key: string): string | null {
     const row = this.db.get<{ value: string }>('SELECT value FROM settings WHERE user_id = ? AND key = ?', userId, key);
     if (!row || row.value === '' || row.value == null) return null;

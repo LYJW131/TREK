@@ -92,6 +92,14 @@ export type Basemap =
   // carries no URL. See components/Map/AmapBasemap.tsx.
   | { kind: 'amap-gl' }
 
+/**
+ * Something a Leaflet TileLayer could actually fetch: an http(s) URL, which is
+ * the only thing it knows how to ask for.
+ */
+export function isTileTemplate(url: string | null | undefined): boolean {
+  return /^https?:\/\//i.test((url || '').trim())
+}
+
 /** A MapLibre style document rather than a `{z}/{x}/{y}` tile template. */
 export function isVectorStyle(url: string | null | undefined): boolean {
   if (!url) return false
@@ -142,5 +150,12 @@ export function resolveBasemap(
   const chosen = resolveTileUrl(template, fallback, cartoKey)
   if (isAmapGlStyle(chosen)) return { kind: 'amap-gl' }
   if (isVectorStyle(chosen)) return { kind: 'vector', style: chosen }
+  // A value this version does not recognise draws the default rather than a
+  // TileLayer pointed at something that will never answer. The case is real and
+  // was not hypothetical: `amap://vector` saved by a newer client and read by a
+  // browser still running the previous bundle — which is every browser for as
+  // long as its Service Worker holds the old app shell — became a raster layer
+  // on a URL with no tiles in it, i.e. a blank map with nothing in the console.
+  if (!isTileTemplate(chosen)) return resolveBasemap(null, fallback, cartoKey)
   return { kind: 'raster', url: chosen }
 }

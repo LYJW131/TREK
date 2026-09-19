@@ -217,11 +217,14 @@ export interface Settings {
    * 「Web端(JS API)」 type and is public by design — it ships in the page, and
    * Amap's protection for it is the domain allow-list set on the key itself.
    *
-   * Its 安全密钥 is deliberately NOT here. That one is a secret, it stays on the
-   * server as AMAP_JS_SECURITY_CODE, and the SDK reaches it through the
-   * `/_AMapService` proxy rather than being handed it.
+   * Its 安全密钥 sits next to it in the same settings form and travels nowhere
+   * near here: it is a MASKED setting, so the server answers `••••••••` and the
+   * real value only ever leaves through the `/_AMapService` proxy, appended to
+   * Amap's own service calls. Saving the mask back is a no-op, which is what
+   * lets one form hold both.
    */
   amap_js_key?: string
+  amap_js_security_code?: string
   mapbox_access_token?: string
   mapbox_style?: string
   maplibre_style?: string

@@ -83,6 +83,7 @@ export const MANAGED_LOCKED_SETTING_KEYS = [
   // The JS API key is a second Amap credential, billed to the same account and
   // public in the browser exactly like carto_api_key — locked for the same reason.
   'amap_js_key',
+  'amap_js_security_code',
   'carto_api_key',
   'llm_api_key',
   'llm_base_url',

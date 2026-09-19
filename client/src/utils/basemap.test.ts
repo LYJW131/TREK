@@ -78,6 +78,17 @@ describe('the Amap vector basemap', () => {
   it('FE-UTIL-BASEMAP-012: and it is credited to Amap like the tiles are', () => {
     expect(attributionForTile(AMAP_GL)).toBe(AMAP_ATTRIBUTION)
   })
+
+  it('FE-UTIL-BASEMAP-013: a scheme this version does not know draws the default, not nothing', () => {
+    // The case that produced a blank map in production: `amap://vector` saved by
+    // a newer client, read by a browser whose Service Worker was still serving
+    // the previous bundle. Without this it became a TileLayer on a URL that can
+    // never answer — no tiles, no error.
+    expect(resolveBasemap('amap://something-later', OFM_POSITRON)).toEqual({ kind: 'vector', style: OFM_POSITRON })
+    expect(resolveBasemap('not-a-url', OFM_POSITRON)).toEqual({ kind: 'vector', style: OFM_POSITRON })
+    // A real template is still a real template.
+    expect(resolveBasemap(CUSTOM, OFM_POSITRON)).toEqual({ kind: 'raster', url: CUSTOM })
+  })
 })
 
 describe('attributionForTile', () => {

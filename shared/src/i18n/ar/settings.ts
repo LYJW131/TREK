@@ -43,8 +43,9 @@ const settings: TranslationStrings = {
   'settings.mapAmapJsKey': 'مفتاح Amap JS API',
   'settings.mapAmapJsKeyHint':
     'لخريطة Amap المتجهة. وهو مفتاح مختلف عن مفتاح «Web 服务» — أنشئه بنوع «Web端(JS API)» من',
+  'settings.mapAmapJsSecurity': 'رمز أمان Amap',
   'settings.mapAmapJsSecurityHint':
-    'لا يُضبط 安全密钥 المرافق هنا. تعتبر Amap وضعه داخل الصفحة غير ملائم للإنتاج، لذا يضبطه المشغّل على الخادم باسم AMAP_JS_SECURITY_CODE.',
+    'يُصدر مع مفتاح JS API. لا يصل إلى المتصفح إطلاقًا: يحتفظ به الخادم ويضيفه إلى طلبات خدمات Amap — وهذا ما توصي به وثائق Amap بدلًا من وضعه في الصفحة.',
   'settings.mapCartoKeyLink': 'مفتاح API لخرائط carto.com الأساسية',
   'settings.mapCartoKeyMissing':
     'هذا القالب خريطة أساسية من CARTO. بدون مفتاح تطبع CARTO عبارة "API KEY REQUIRED" على كل بلاطة. إلى أن تُدخل مفتاحًا، تعرض TREK الخريطة الأساسية الافتراضية بدلاً منها.',

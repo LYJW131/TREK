@@ -1,8 +1,11 @@
 import { Controller, Get, HttpException, Req, Res, UseGuards } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { readEnv } from '../../app-config';
+import type { User } from '../../types';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RateLimitService } from '../common/rate-limit.service';
+import { SettingsService } from '../settings/settings.service';
 import { safeFetchFollow } from '../../utils/ssrfGuard';
 
 /**
@@ -29,6 +32,12 @@ import { safeFetchFollow } from '../../utils/ssrfGuard';
  * `/v4/map/styles` branch below is for a custom basemap style, which TREK does
  * not use yet and which the docs put on a different host; it is here because
  * the split is Amap's, not because something asks for it today.
+ *
+ * The secret is a masked user setting — `amap_js_security_code`, which
+ * getUserSettings never hands back in cleartext — with an admin default behind
+ * it and `AMAP_JS_SECURITY_CODE` in front. Configured in the same place as the
+ * JS key it pairs with; the difference is that only one of the two is ever
+ * served to a browser.
  *
  * Authenticated, because the secret is: the SDK loads this through a `<script>`
  * tag from the app's own origin, so the session cookie rides along and the
@@ -59,15 +68,21 @@ const RL_WINDOW = 60_000;
 @Controller('_AMapService')
 @UseGuards(JwtAuthGuard)
 export class AmapProxyController {
-  constructor(private readonly rl: RateLimitService) {}
+  constructor(
+    private readonly rl: RateLimitService,
+    private readonly settings: SettingsService,
+  ) {}
 
   @Get('*path')
-  async forward(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async forward(@CurrentUser() user: User, @Req() req: Request, @Res() res: Response): Promise<void> {
     if (!this.rl.check('amap_service', req.ip || 'unknown', 600, RL_WINDOW, Date.now())) {
       throw new HttpException({ error: 'Too many requests. Please try again later.' }, 429);
     }
 
-    const secret = readEnv().maps.amapJsSecurityCode;
+    // Env → the caller's own setting → the admin default. The last step is what
+    // makes one value cover every member; the first is what lets an operator pin
+    // it in compose instead.
+    const secret = this.settings.resolveSecretSetting(user.id, 'amap_js_security_code', readEnv().maps.amapJsSecurityCode);
     if (!secret) {
       // Explicit, because the alternative is forwarding without `jscode` and
       // handing the user a blank map with a 200 behind it.
