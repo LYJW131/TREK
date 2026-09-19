@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useMap } from 'react-leaflet'
 import { wgs84ToGcj02 } from '@trek/shared'
+import { useIsDark } from '../../hooks/useIsDark'
 import { useSettingsStore } from '../../store/settingsStore'
 import { loadAmapSdk, type AmapMap } from './amapLoader'
 
@@ -40,7 +41,12 @@ export function AmapBasemap() {
   const map = useMap()
   const key = useSettingsStore(s => s.settings.amap_js_key || '')
   const securityCode = useSettingsStore(s => s.settings.amap_js_security_code || '')
-  const dark = useSettingsStore(s => s.settings.dark_mode)
+  // useIsDark, not `settings.dark_mode`: that field is `boolean | string` and
+  // carries 'auto' and 'off' as strings, both of which are truthy — reading it
+  // directly paints the dark basemap under a light app. The hook reads the
+  // `.dark` class that applyAppearance() writes, which is the one source of
+  // truth and also follows an OS-level switch under 'auto'.
+  const dark = useIsDark()
   const amapRef = useRef<AmapMap | null>(null)
   const handlerRef = useRef<(() => void) | null>(null)
 
