@@ -75,6 +75,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': '加入當日行程',
   'transit.itinerary': '行程',
   'transit.attribution': '路線資料來自',
+  'transit.estimatedTimes':
+    '時間依行程長度估算 —— 此資料來源不提供發車時刻。',
   'transport.modeManual': '手動',
   'transport.modeAutomated': '自動',
   'transit.sectionTitle': '自動大眾運輸',
@@ -86,6 +88,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': '行程時間',
   'transit.transfersLabel': '轉乘次數',
   'transit.walkLabel': '步行',
-  'transit.searchHint': '搜尋實際交通連線，並直接加入當天行程 — 資料由 Transitous 提供。',
+  'transit.searchHint': '搜尋實際交通連線，並直接加入當天行程。',
 };
 export default trip;

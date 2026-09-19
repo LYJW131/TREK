@@ -176,10 +176,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': '由哪个服务响应公共交通搜索。',
   'admin.transitProvider.transitous': 'Transitous（免费）',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': '高德地图（Amap）',
   'admin.transitProvider.transitousHint': '社区 GTFS 数据源。免费且无需密钥，在欧洲覆盖最好。',
   'admin.transitProvider.googleHint': '使用上方的 Google 密钥，覆盖 Transitous 没有数据的地区。按每次搜索计费——未设置密钥时仍使用 Transitous。',
   'admin.transitProvider.noKeyWarning': '已选择 Google，但未配置 Google 密钥——公共交通搜索仍在使用 Transitous。请在上方的 API 密钥中添加密钥。',
   'admin.transitProvider.personalKeyWarning': '只设置了你自己的 Google 密钥，因此其他成员的搜索仍会回退到 Transitous。请以管理员身份在上方保存密钥，使其对整个实例生效。',
+  'admin.transitProvider.amapHint':
+    '使用上方的高德密钥，覆盖中国大陆——这里 Transitous 没有任何数据。高德返回的是行程时长而非发车时刻，因此显示的时间是估算值。',
+  'admin.transitProvider.amapNoKeyWarning':
+    '已选择 Amap，但未配置 Amap 密钥——公共交通搜索仍在使用 Transitous。请在上方的 API 密钥中添加密钥。',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    '只设置了你自己的 Amap 密钥，因此其他成员的搜索仍会回退到 Transitous。请以管理员身份在上方保存密钥，使其对整个实例生效。',
   'admin.placeShadow.title': '地点搜索记录',
   'admin.placeShadow.subtitle':
     '记录用户选中了哪条搜索结果，以便日后用真实的搜索来评估另一套地点索引。数据不会离开本实例，管理员随时可以导出或删除记录。',

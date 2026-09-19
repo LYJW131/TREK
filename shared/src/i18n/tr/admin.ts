@@ -225,10 +225,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Toplu taşıma aramasını hangi hizmetin yanıtlayacağı.',
   'admin.transitProvider.transitous': 'Transitous (ücretsiz)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Topluluk GTFS akışları. Ücretsiz ve anahtarsız, Avrupa\'da en iyi kapsama.',
   'admin.transitProvider.googleHint': 'Transitous\'un verisi olmayan bölgeler için yukarıdaki Google anahtarını kullanır. Arama başına ücretlendirilir — anahtar ayarlanmadığı sürece Transitous kullanılır.',
   'admin.transitProvider.noKeyWarning': 'Google seçili, ancak yapılandırılmış bir Google anahtarı yok — toplu taşıma araması hâlâ Transitous kullanıyor. Yukarıdaki API Anahtarları bölümünden bir anahtar ekleyin.',
   'admin.transitProvider.personalKeyWarning': 'Yalnızca kendi Google anahtarınız ayarlı, bu yüzden diğer üyelerin araması hâlâ Transitous\'a düşüyor. Tüm kuruluma uygulamak için anahtarı yukarıda yönetici olarak kaydedin.',
+  'admin.transitProvider.amapHint':
+    "Yukarıdaki Amap anahtarını kullanır; Transitous'un verisi olmayan Çin anakarası için. Amap kalkış saatleri yerine yolculuk süreleri döndürür, bu yüzden gösterilen saatler tahminidir.",
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap seçili, ancak yapılandırılmış bir Amap anahtarı yok — toplu taşıma araması hâlâ Transitous kullanıyor. Yukarıdaki API Anahtarları bölümünden bir anahtar ekleyin.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    "Yalnızca kendi Amap anahtarınız ayarlı, bu yüzden diğer üyelerin araması hâlâ Transitous'a düşüyor. Tüm kuruluma uygulamak için anahtarı yukarıda yönetici olarak kaydedin.",
   'admin.placeShadow.title': 'Yer arama günlüğü',
   'admin.placeShadow.subtitle':
     'Hangi arama sonucunun seçildiğini kaydeder, böylece başka bir yer dizini daha sonra gerçek aramalarla ölçülebilir. Hiçbir şey bu sunucudan çıkmaz ve bir yönetici günlüğü istediği zaman dışa aktarabilir veya silebilir.',

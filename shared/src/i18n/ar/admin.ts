@@ -199,10 +199,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'الخدمة التي تجيب على بحث النقل العام.',
   'admin.transitProvider.transitous': 'Transitous (مجاني)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'تغذيات GTFS مجتمعية. مجانية وبدون مفتاح، وأفضل تغطية في أوروبا.',
   'admin.transitProvider.googleHint': 'يستخدم مفتاح Google أعلاه للمناطق التي لا تتوفر لها بيانات في Transitous. يُحاسب على كل بحث — ويُستخدم Transitous ما دام لا يوجد مفتاح.',
   'admin.transitProvider.noKeyWarning': 'تم اختيار Google، لكن لا يوجد مفتاح Google مُهيأ — لا يزال بحث النقل يستخدم Transitous. أضف مفتاحًا ضمن مفاتيح API أعلاه.',
   'admin.transitProvider.personalKeyWarning': 'مفتاح Google الخاص بك وحده مضبوط، لذا يعود بحث النقل لبقية الأعضاء إلى Transitous. احفظ المفتاح أعلاه كمسؤول لتطبيقه على مستوى المثيل.',
+  'admin.transitProvider.amapHint':
+    'يستخدم مفتاح Amap أعلاه، للبر الرئيسي للصين حيث لا تتوفر بيانات لدى Transitous. يعيد Amap مدة الرحلة بدلاً من مواعيد المغادرة، لذا فالأوقات المعروضة تقديرية.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'تم اختيار Amap، لكن لا يوجد مفتاح Amap مُهيأ — لا يزال بحث النقل يستخدم Transitous. أضف مفتاحًا ضمن مفاتيح API أعلاه.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'مفتاح Amap الخاص بك وحده مضبوط، لذا يعود بحث النقل لبقية الأعضاء إلى Transitous. احفظ المفتاح أعلاه كمسؤول لتطبيقه على مستوى المثيل.',
   'admin.placeShadow.title': 'سجل البحث عن الأماكن',
   'admin.placeShadow.subtitle':
     'تسجيل نتيجة البحث التي جرى اختيارها، حتى يمكن لاحقًا قياس فهرس أماكن آخر على عمليات بحث حقيقية. لا يغادر أي شيء هذا الخادم، ويمكن للمشرف تصدير السجل أو حذفه في أي وقت.',

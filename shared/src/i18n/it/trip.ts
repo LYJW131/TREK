@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Aggiungi al giorno',
   'transit.itinerary': 'Itinerario',
   'transit.attribution': 'Dati di routing tramite',
+  'transit.estimatedTimes':
+    'Gli orari sono stimati — questo provider non pubblica orari di partenza.',
   'transport.modeManual': 'Manuale',
   'transport.modeAutomated': 'Automatico',
   'transit.sectionTitle': 'Trasporto pubblico automatico',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Durata',
   'transit.transfersLabel': 'Cambi',
   'transit.walkLabel': 'A piedi',
-  'transit.searchHint': 'Cerca collegamenti reali e aggiungili direttamente alla giornata — dati via Transitous.',
+  'transit.searchHint': 'Cerca collegamenti reali e aggiungili direttamente alla giornata.',
 };
 export default trip;

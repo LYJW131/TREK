@@ -11,6 +11,7 @@
  */
 import { deriveTransitStats, type TransitLeg } from '../../../src/nest/transit/transit.helpers';
 import { GoogleTransitProvider } from '../../../src/nest/transit/google-transit.provider';
+import { AmapTransitProvider } from '../../../src/nest/transit/amap-transit.provider';
 import { TransitService } from '../../../src/nest/transit/transit.service';
 import type { DatabaseService } from '../../../src/nest/database/database.service';
 
@@ -26,7 +27,7 @@ const fetchMock = vi.fn();
 // No `transit_provider` row means Transitous, so every case below keeps
 // exercising the MOTIS path — the Google branch has its own suite.
 const db = { get: () => undefined, run: () => undefined } as unknown as DatabaseService;
-const svc = new TransitService(new GoogleTransitProvider(db));
+const svc = new TransitService(new GoogleTransitProvider(db), new AmapTransitProvider(db));
 
 beforeEach(() => {
   vi.stubGlobal('fetch', fetchMock);

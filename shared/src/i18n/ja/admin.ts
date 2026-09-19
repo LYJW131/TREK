@@ -212,10 +212,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': '公共交通の検索に応答するサービス。',
   'admin.transitProvider.transitous': 'Transitous（無料）',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'コミュニティの GTFS フィード。無料でキー不要、ヨーロッパのカバー率が最も高い。',
   'admin.transitProvider.googleHint': '上記の Google キーを使用し、Transitous にデータがない地域に対応します。検索ごとに課金されます。キーが未設定の間は Transitous を使用します。',
   'admin.transitProvider.noKeyWarning': 'Google が選択されていますが、Google キーが設定されていません。公共交通の検索は引き続き Transitous を使用します。上の「API キー」でキーを追加してください。',
   'admin.transitProvider.personalKeyWarning': 'あなた自身の Google キーのみが設定されているため、他のメンバーの検索は引き続き Transitous になります。インスタンス全体に適用するには、管理者として上でキーを保存してください。',
+  'admin.transitProvider.amapHint':
+    '上の Amap キーを使用します。Transitous にデータがない中国本土向けです。Amap は出発時刻ではなく所要時間を返すため、表示される時刻は推定値です。',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap が選択されていますが、Amap キーが設定されていません。公共交通の検索は引き続き Transitous を使用します。上の「API キー」でキーを追加してください。',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'あなた自身の Amap キーのみが設定されているため、他のメンバーの検索は引き続き Transitous になります。インスタンス全体に適用するには、管理者として上でキーを保存してください。',
   'admin.placeShadow.title': '場所検索の記録',
   'admin.placeShadow.subtitle':
     'どの検索結果が選ばれたかを記録し、後で別の場所インデックスを実際の検索で評価できるようにします。データがこのインスタンスの外に出ることはなく、管理者はいつでも書き出しや削除ができます。',

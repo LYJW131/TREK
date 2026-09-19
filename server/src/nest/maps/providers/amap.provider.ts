@@ -28,12 +28,9 @@
  * unattributable image is worse than no image, so an Amap place gets its picture
  * the same way a place found on OpenStreetMap does.
  */
-import { createHash } from 'node:crypto';
 import { fromAmapLocation, gcj02ToWgs84, toAmapLocation } from '@trek/shared';
-import { readEnv } from '../../../app-config';
-import { safeFetchFollow } from '../../../utils/ssrfGuard';
-import { discardBody, exceedsDeclaredLength, readCappedJson } from '../../../utils/cappedFetch';
-import { UA, parseOpeningHours } from '../maps.helpers';
+import { parseOpeningHours } from '../maps.helpers';
+import { amapNumber, amapText, asArray, callAmap, type AmapEnvelope } from './amap-client';
 import type {
   PlacesProvider,
   ProviderCredential,
@@ -42,16 +39,6 @@ import type {
   SearchBias,
   ViewportBias,
 } from './places-provider';
-
-/** The upstream every Web Service call is written against. */
-const AMAP_UPSTREAM = 'https://restapi.amap.com';
-/** A search answer is a few dozen POIs; anything past this is not the endpoint we think it is. */
-const AMAP_MAX_RESPONSE_BYTES = 1_000_000;
-
-/** An Amap list field, or nothing. The envelope is checked; its arrays never were. */
-function asArray<T>(value: T[] | undefined | null): T[] {
-  return Array.isArray(value) ? value : [];
-}
 
 /**
  * The prefix that makes an Amap POI id recognisable anywhere in TREK.
@@ -76,8 +63,6 @@ export function amapPoiId(placeId: string): string | null {
   return m ? m[1] : null;
 }
 
-let amapApiCallCount = 0;
-
 /**
  * Amap accepts either `lang=zh_cn` or `lang=en`, and nothing else. Anything we
  * cannot serve is answered in Chinese rather than rejected, which is the right
@@ -85,40 +70,6 @@ let amapApiCallCount = 0;
  */
 function toAmapLang(lang?: string): string {
   return lang && /^en/i.test(lang) ? 'en' : 'zh_cn';
-}
-
-/**
- * Amap's own error text for the codes an operator can actually act on.
- *
- * The raw `info` string is returned for everything else; these three are
- * singled out because they are the ones a misconfigured install hits first, and
- * because Amap's own wording for them ("INVALID_USER_SCODE") does not tell an
- * admin what to change.
- */
-const AMAP_INFOCODE_HINTS: Record<string, string> = {
-  '10001': 'Amap API key is invalid — check that it is a "Web 服务" (web service) key, not a JS API key',
-  '10003': 'Amap daily request quota exhausted',
-  '10009': 'Amap key rejected the request: the key is restricted to a different domain or IP',
-};
-
-/**
- * The HTTP status TREK should answer with for an Amap failure.
- *
- * Amap's own status line is always 200, and the controller maps a thrown
- * `.status` straight through to the client, so a credential problem has to
- * arrive as 403 and a quota problem as 429 for the client to say anything
- * useful about it.
- */
-function statusForInfocode(infocode: string): number {
-  if (infocode === '10001' || infocode === '10009') return 403;
-  if (infocode === '10003' || infocode === '10004' || infocode === '10019' || infocode === '10020') return 429;
-  return 502;
-}
-
-interface AmapEnvelope {
-  status?: string;
-  info?: string;
-  infocode?: string;
 }
 
 interface AmapTip {
@@ -144,27 +95,6 @@ interface AmapPoi {
   business?: { rating?: unknown; tel?: unknown; opentime_week?: unknown; opentime_today?: unknown };
 }
 
-/**
- * Amap returns an empty *array* where a string field has no value — `address:
- * []`, `tel: []` — so every optional text field has to be coerced rather than
- * read. A bare `poi.address || ''` yields `[]` in a template and `"[]"` in the
- * database.
- */
-function amapText(value: unknown): string {
-  if (typeof value === 'string') return value.trim();
-  if (typeof value === 'number') return String(value);
-  // Some fields arrive as a one-element array of the value.
-  if (Array.isArray(value) && value.length === 1) return amapText(value[0]);
-  return '';
-}
-
-function amapNumber(value: unknown): number | null {
-  const text = amapText(value);
-  if (!text) return null;
-  const n = Number.parseFloat(text);
-  return Number.isFinite(n) ? n : null;
-}
-
 export class AmapPlacesProvider implements PlacesProvider {
   readonly id = 'amap' as const;
 
@@ -173,97 +103,14 @@ export class AmapPlacesProvider implements PlacesProvider {
   // ── Outbound plumbing ──────────────────────────────────────────────────────
 
   /**
-   * Build the full URL for one call, key and optional signature attached.
-   *
-   * `AMAP_API_BASE` mirrors `PLACES_API_BASE`: an install that routes its
-   * outbound calls through a proxy or a gateway holding the credential says so
-   * once, here.
+   * One call, key attached and the body-carried verdict turned into a real
+   * error. The mechanics moved to amap-client.ts when the transit backend
+   * became the second caller against the same envelope — see the note there
+   * for why that check is not worth having twice.
    */
-  private url(path: string, params: Record<string, string>): string {
-    const query = new URLSearchParams({ ...params, key: this.credential.key, output: 'JSON' });
-    const sig = this.signature(params);
-    if (sig) query.set('sig', sig);
-    const base = (readEnv().maps.amapApiBase || AMAP_UPSTREAM).replace(/([^/]|^)\/+$/, '$1');
-    return `${base}${path}?${query.toString()}`;
+  private call<T extends AmapEnvelope>(path: string, params: Record<string, string>, label: string): Promise<T> {
+    return callAmap<T>(path, params, label, this.credential);
   }
-
-  /**
-   * Amap's optional 数字签名 (digital signature).
-   *
-   * A key can be created with a private secret, and such a key rejects every
-   * unsigned request. The scheme is an MD5 over every query parameter sorted by
-   * name, the key and the output format included, with the secret appended.
-   * MD5 because Amap specifies MD5, not because anything here is choosing a
-   * hash.
-   *
-   * Unset, which is the common case, nothing is added.
-   */
-  private signature(params: Record<string, string>): string | null {
-    const secret = readEnv().maps.amapApiSecret;
-    if (!secret) return null;
-    const signed = { ...params, key: this.credential.key, output: 'JSON' };
-    const canonical = Object.keys(signed)
-      // Byte order, and it has to stay byte order: Amap computes the same signature over
-      // the same sorted names, so a locale-aware comparison would produce a signature the
-      // other side rejects.
-      .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
-      .map((k) => `${k}=${signed[k]}`)
-      .join('&');
-    return createHash('md5').update(`${canonical}${secret}`).digest('hex');
-  }
-
-  /**
-   * One call, with the body-carried verdict turned into a real error.
-   *
-   * Through safeFetchFollow like every other outbound URL in the maps domain, so
-   * a proxied base cannot be pointed at something internal.
-   */
-  private async call<T extends AmapEnvelope>(path: string, params: Record<string, string>, label: string): Promise<T> {
-    const url = this.url(path, params);
-    amapApiCallCount++;
-    // The key rides in the query string, so the label is logged without the URL —
-    // unlike the Google path, where the credential sits in a header.
-    console.debug(`[Amap API] #${amapApiCallCount} ${label} → ${path}`);
-
-    const response = await safeFetchFollow(
-      url,
-      { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(8000) },
-      { bypassInternalIpAllowed: true },
-    );
-
-    if (!response.ok) {
-      // A transport-level failure, i.e. the proxy in front of Amap rather than
-      // Amap itself: Amap's own answers are always 200.
-      this.fail(label, response.status, `Amap ${label} failed with HTTP ${response.status}`);
-    }
-
-    // Capped, like the places index client next door: the base URL is
-    // configurable (AMAP_API_BASE points at an operator's own gateway), and an
-    // answer of arbitrary size was buffered into the heap in full before
-    // anything looked at it.
-    if (exceedsDeclaredLength(response, AMAP_MAX_RESPONSE_BYTES)) {
-      discardBody(response);
-      this.fail(label, 502, `Amap ${label} answered with more than ${AMAP_MAX_RESPONSE_BYTES} bytes`);
-    }
-    const data = await readCappedJson<T>(response, AMAP_MAX_RESPONSE_BYTES);
-    if (!data || typeof data !== 'object') {
-      this.fail(label, 502, `Amap ${label} answered with something that is not a JSON object`);
-    }
-    if (data.status !== '1') {
-      const infocode = data.infocode ?? '';
-      const hint = AMAP_INFOCODE_HINTS[infocode] || data.info || 'Amap API error';
-      this.fail(label, statusForInfocode(infocode), `${hint} (infocode ${infocode || 'none'})`);
-    }
-    return data;
-  }
-
-  private fail(label: string, status: number, message: string): never {
-    console.error(`[Maps] amap/${label} failed with ${status} userId=${this.credential.userId} keySource=${this.credential.source}`);
-    const err = new Error(message) as Error & { status: number };
-    err.status = status;
-    throw err;
-  }
-
   // ── Normalisation ──────────────────────────────────────────────────────────
 
   /**

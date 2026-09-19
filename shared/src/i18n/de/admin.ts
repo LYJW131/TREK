@@ -180,10 +180,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Welcher Dienst die ÖPNV-Suche beantwortet.',
   'admin.transitProvider.transitous': 'Transitous (kostenlos)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Community-GTFS-Feeds. Kostenlos und ohne Schlüssel, mit der besten Abdeckung in Europa.',
   'admin.transitProvider.googleHint': 'Nutzt den obigen Google-Schlüssel, für Regionen ohne Transitous-Daten. Wird pro Suche abgerechnet – solange kein Schlüssel gesetzt ist, wird Transitous verwendet.',
   'admin.transitProvider.noKeyWarning': 'Google ist ausgewählt, aber es ist kein Google-Schlüssel hinterlegt — die ÖPNV-Suche nutzt weiterhin Transitous. Trage oben unter API-Schlüssel einen Schlüssel ein.',
   'admin.transitProvider.personalKeyWarning': 'Es ist nur dein eigener Google-Schlüssel gesetzt, daher fällt die Suche der anderen Mitglieder weiterhin auf Transitous zurück. Speichere den Schlüssel oben als Admin, damit er instanzweit gilt.',
+  'admin.transitProvider.amapHint':
+    'Verwendet den Amap-Schlüssel oben, für Festlandchina, wo Transitous keine Daten hat. Amap liefert Fahrtdauern statt Abfahrtszeiten, die angezeigten Zeiten sind daher Schätzungen.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap ist ausgewählt, aber es ist kein Amap-Schlüssel hinterlegt — die ÖPNV-Suche nutzt weiterhin Transitous. Trage oben unter API-Schlüssel einen Schlüssel ein.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Es ist nur dein eigener Amap-Schlüssel gesetzt, daher fällt die Suche der anderen Mitglieder weiterhin auf Transitous zurück. Speichere den Schlüssel oben als Admin, damit er instanzweit gilt.',
   'admin.placeShadow.title': 'Ortssuche protokollieren',
   'admin.placeShadow.subtitle':
     'Festhalten, welches Suchergebnis ausgewählt wurde, damit sich ein anderer Ortsindex später an echten Suchen messen lässt. Nichts verlässt diese Instanz, und ein Administrator kann das Protokoll jederzeit exportieren oder löschen.',

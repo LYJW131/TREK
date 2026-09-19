@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Thêm vào ngày',
   'transit.itinerary': 'Lộ trình',
   'transit.attribution': 'Dữ liệu tìm tuyến từ',
+  'transit.estimatedTimes':
+    'Giờ là ước tính — nhà cung cấp này không công bố giờ khởi hành.',
   'transport.modeManual': 'Thủ công',
   'transport.modeAutomated': 'Tự động',
   'transit.sectionTitle': 'Giao thông công cộng tự động',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Thời lượng',
   'transit.transfersLabel': 'Chuyển tuyến',
   'transit.walkLabel': 'Đi bộ',
-  'transit.searchHint': 'Tìm các kết nối thực tế và thêm thẳng vào ngày — dữ liệu qua Transitous.',
+  'transit.searchHint': 'Tìm các kết nối thực tế và thêm thẳng vào ngày.',
 };
 export default trip;

@@ -225,10 +225,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Vilken tjänst som besvarar sökningar i kollektivtrafiken.',
   'admin.transitProvider.transitous': 'Transitous (gratis)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'GTFS-flöden från communityn. Gratis och utan nyckel, med bäst täckning i Europa.',
   'admin.transitProvider.googleHint': 'Använder Google-nyckeln ovan, för regioner som Transitous saknar data för. Debiteras per sökning – så länge ingen nyckel är angiven används Transitous.',
   'admin.transitProvider.noKeyWarning': 'Google är valt, men ingen Google-nyckel är konfigurerad – kollektivtrafiksökningen använder fortfarande Transitous. Lägg till en nyckel under API-nycklar ovan.',
   'admin.transitProvider.personalKeyWarning': 'Bara din egen Google-nyckel är angiven, så andra medlemmars sökningar faller fortfarande tillbaka på Transitous. Spara nyckeln ovan som administratör för att den ska gälla hela instansen.',
+  'admin.transitProvider.amapHint':
+    'Använder Amap-nyckeln ovan, för Fastlandskina där Transitous saknar data. Amap svarar med restider i stället för avgångstider, så tiderna som visas är uppskattningar.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap är valt, men ingen Amap-nyckel är konfigurerad – kollektivtrafiksökningen använder fortfarande Transitous. Lägg till en nyckel under API-nycklar ovan.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Bara din egen Amap-nyckel är angiven, så andra medlemmars sökningar faller fortfarande tillbaka på Transitous. Spara nyckeln ovan som administratör för att den ska gälla hela instansen.',
   'admin.placeShadow.title': 'Logg över platssökningar',
   'admin.placeShadow.subtitle':
     'Registrera vilket sökresultat som valdes, så att ett annat platsindex senare kan mätas mot verkliga sökningar. Ingenting lämnar den här instansen och en administratör kan när som helst exportera eller radera loggen.',

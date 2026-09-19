@@ -219,10 +219,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Which service answers public transit search.',
   'admin.transitProvider.transitous': 'Transitous (free)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Community GTFS feeds. Free and keyless, with the best coverage in Europe.',
   'admin.transitProvider.googleHint': 'Uses the Google API key above, for regions Transitous has no data for. Billed per search — Transitous is used while no key is set.',
   'admin.transitProvider.noKeyWarning': 'Google is selected, but no Google API key is configured — transit search is still using Transitous. Add a key under API Keys above.',
   'admin.transitProvider.personalKeyWarning': 'Only your own Google key is set, so other members\' transit searches still fall back to Transitous. Save the key above as an admin to apply it instance-wide.',
+  'admin.transitProvider.amapHint':
+    'Uses the Amap key above, for mainland China, where Transitous has no data. Amap answers with journey durations rather than departure times, so the times shown are estimates.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap is selected, but no Amap API key is configured — transit search is still using Transitous. Add a key under API Keys above.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    "Only your own Amap key is set, so other members' transit searches still fall back to Transitous. Save the key above as an admin to apply it instance-wide.",
   'admin.placeShadow.title': 'Place Search Log',
   'admin.placeShadow.subtitle':
     'Record which search result was picked, so a different place index can be measured against real searches later. Nothing leaves this instance, and an admin can export or delete the log at any time.',

@@ -179,10 +179,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Která služba odpovídá na vyhledávání veřejné dopravy.',
   'admin.transitProvider.transitous': 'Transitous (zdarma)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Komunitní GTFS zdroje. Zdarma a bez klíče, s nejlepším pokrytím v Evropě.',
   'admin.transitProvider.googleHint': 'Použije výše uvedený klíč Google pro regiony, pro které Transitous nemá data. Účtuje se za každé hledání – dokud není klíč nastaven, používá se Transitous.',
   'admin.transitProvider.noKeyWarning': 'Je vybrán Google, ale není nastaven žádný klíč Google – vyhledávání dopravy stále používá Transitous. Přidejte klíč v sekci API klíče výše.',
   'admin.transitProvider.personalKeyWarning': 'Je nastaven jen váš vlastní klíč Google, takže ostatním členům se vyhledávání stále vrací k Transitous. Uložte klíč výše jako správce, aby platil pro celou instanci.',
+  'admin.transitProvider.amapHint':
+    'Používá klíč Amap výše, pro pevninskou Čínu, kde Transitous nemá data. Amap vrací délku cesty místo časů odjezdu, zobrazené časy jsou proto odhad.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Je vybrán Amap, ale není nastaven žádný klíč Amap – vyhledávání dopravy stále používá Transitous. Přidejte klíč v sekci API klíče výše.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Je nastaven jen váš vlastní klíč Amap, takže ostatním členům se vyhledávání stále vrací k Transitous. Uložte klíč výše jako správce, aby platil pro celou instanci.',
   'admin.placeShadow.title': 'Záznam vyhledávání míst',
   'admin.placeShadow.subtitle':
     'Zaznamenávat, který výsledek vyhledávání byl vybrán, aby bylo možné později porovnat jiný index míst na skutečných dotazech. Nic neopouští tuto instanci a správce může záznam kdykoli exportovat nebo smazat.',

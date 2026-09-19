@@ -170,10 +170,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Quin servei respon la cerca de transport públic.',
   'admin.transitProvider.transitous': 'Transitous (gratuït)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Fluxos GTFS de la comunitat. Gratuït i sense clau, amb la millor cobertura a Europa.',
   'admin.transitProvider.googleHint': 'Utilitza la clau de Google anterior, per a regions sense dades a Transitous. Es factura per cerca: mentre no hi hagi clau s\'utilitza Transitous.',
   'admin.transitProvider.noKeyWarning': 'Google està seleccionat, però no hi ha cap clau de Google configurada: la cerca de transport encara utilitza Transitous. Afegeix una clau a Claus d\'API a dalt.',
   'admin.transitProvider.personalKeyWarning': 'Només hi ha la teva pròpia clau de Google, de manera que la cerca dels altres membres continua recorrent a Transitous. Desa la clau a dalt com a administrador per aplicar-la a tota la instància.',
+  'admin.transitProvider.amapHint':
+    "Utilitza la clau Amap de dalt, per a la Xina continental, on Transitous no té dades. Amap respon amb durades de trajecte en lloc d'hores de sortida, per la qual cosa els horaris mostrats són estimacions.",
+  'admin.transitProvider.amapNoKeyWarning':
+    "Amap està seleccionat, però no hi ha cap clau d'Amap configurada: la cerca de transport encara utilitza Transitous. Afegeix una clau a Claus d'API a dalt.",
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Només hi ha la teva pròpia clau de Amap, de manera que la cerca dels altres membres continua recorrent a Transitous. Desa la clau a dalt com a administrador per aplicar-la a tota la instància.',
   'admin.placeShadow.title': 'Registre de cerques de llocs',
   'admin.placeShadow.subtitle':
     'Desar quin resultat de cerca s\'ha triat, per poder avaluar més endavant un altre índex de llocs amb cerques reals. No surt res d\'aquesta instància i un administrador pot exportar o esborrar el registre quan vulgui.',

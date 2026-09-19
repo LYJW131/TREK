@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Přidat ke dni',
   'transit.itinerary': 'Itinerář',
   'transit.attribution': 'Data o spojení přes',
+  'transit.estimatedTimes':
+    'Časy jsou odhadované — tento poskytovatel nezveřejňuje časy odjezdů.',
   'transport.modeManual': 'Ručně',
   'transport.modeAutomated': 'Automaticky',
   'transit.sectionTitle': 'Automatické spojení MHD',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Doba trvání',
   'transit.transfersLabel': 'Přestupy',
   'transit.walkLabel': 'Chůze',
-  'transit.searchHint': 'Vyhledejte reálná spojení a přidejte je rovnou do dne — data přes Transitous.',
+  'transit.searchHint': 'Vyhledejte reálná spojení a přidejte je rovnou do dne.',
 };
 export default trip;

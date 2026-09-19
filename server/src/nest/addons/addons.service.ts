@@ -243,11 +243,28 @@ export class AddonsService {
     return resolveApiKey(this.dbs, 'maps_api_key', userId, readEnv().maps.placesApiKey).source;
   }
 
+  /**
+   * The Amap half of the same question. A separate resolve rather than a second
+   * argument to googleKeySource(): the two backends read different key names
+   * and an install can have one without the other.
+   */
+  private amapKeySource(userId: number): ApiKeySource | null {
+    return resolveApiKey(this.dbs, 'amap_api_key', userId, readEnv().maps.amapApiKey).source;
+  }
+
   getTransitProvider(userId = 0) {
-    return { provider: readTransitProvider(this.dbs), googleKeySource: this.googleKeySource(userId) };
+    return {
+      provider: readTransitProvider(this.dbs),
+      googleKeySource: this.googleKeySource(userId),
+      amapKeySource: this.amapKeySource(userId),
+    };
   }
 
   updateTransitProvider(provider: TransitProvider, userId = 0) {
-    return { provider: writeTransitProvider(this.dbs, provider), googleKeySource: this.googleKeySource(userId) };
+    return {
+      provider: writeTransitProvider(this.dbs, provider),
+      googleKeySource: this.googleKeySource(userId),
+      amapKeySource: this.amapKeySource(userId),
+    };
   }
 }

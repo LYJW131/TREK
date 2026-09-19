@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Προσθήκη στην ημέρα',
   'transit.itinerary': 'Δρομολόγιο',
   'transit.attribution': 'Δεδομένα διαδρομών μέσω',
+  'transit.estimatedTimes':
+    'Οι ώρες είναι εκτιμώμενες — αυτός ο πάροχος δεν δημοσιεύει ώρες αναχώρησης.',
   'transport.modeManual': 'Χειροκίνητα',
   'transport.modeAutomated': 'Αυτόματα',
   'transit.sectionTitle': 'Αυτόματες δημόσιες συγκοινωνίες',
@@ -89,6 +91,6 @@ const trip: TranslationStrings = {
   'transit.transfersLabel': 'Μετεπιβιβάσεις',
   'transit.walkLabel': 'Περπάτημα',
   'transit.searchHint':
-    'Αναζητήστε πραγματικές συνδέσεις και προσθέστε τις απευθείας στην ημέρα — δεδομένα μέσω Transitous.',
+    'Αναζητήστε πραγματικές συνδέσεις και προσθέστε τις απευθείας στην ημέρα.',
 };
 export default trip;

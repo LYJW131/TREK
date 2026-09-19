@@ -179,10 +179,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Qué servicio responde a la búsqueda de transporte público.',
   'admin.transitProvider.transitous': 'Transitous (gratis)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Fuentes GTFS de la comunidad. Gratis y sin clave, con la mejor cobertura en Europa.',
   'admin.transitProvider.googleHint': 'Usa la clave de Google anterior, para regiones sin datos en Transitous. Se cobra por búsqueda: mientras no haya clave se usa Transitous.',
   'admin.transitProvider.noKeyWarning': 'Google está seleccionado, pero no hay ninguna clave de Google configurada: la búsqueda de transporte sigue usando Transitous. Añade una clave en Claves de API arriba.',
   'admin.transitProvider.personalKeyWarning': 'Solo está configurada tu propia clave de Google, así que la búsqueda de los demás miembros sigue recurriendo a Transitous. Guarda la clave arriba como administrador para aplicarla a toda la instancia.',
+  'admin.transitProvider.amapHint':
+    'Usa la clave de Amap de arriba, para China continental, donde Transitous no tiene datos. Amap devuelve duraciones de trayecto en lugar de horas de salida, así que los horarios mostrados son estimaciones.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap está seleccionado, pero no hay ninguna clave de Amap configurada: la búsqueda de transporte sigue usando Transitous. Añade una clave en Claves de API arriba.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Solo está configurada tu propia clave de Amap, así que la búsqueda de los demás miembros sigue recurriendo a Transitous. Guarda la clave arriba como administrador para aplicarla a toda la instancia.',
   'admin.placeShadow.title': 'Registro de búsquedas de lugares',
   'admin.placeShadow.subtitle':
     'Guardar qué resultado de búsqueda se eligió, para poder evaluar más adelante otro índice de lugares con búsquedas reales. Nada sale de esta instancia y un administrador puede exportar o borrar el registro cuando quiera.',

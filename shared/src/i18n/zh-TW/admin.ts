@@ -215,10 +215,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': '由哪個服務回應大眾運輸搜尋。',
   'admin.transitProvider.transitous': 'Transitous（免費）',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': '高德地圖（Amap）',
   'admin.transitProvider.transitousHint': '社群 GTFS 資料來源。免費且免金鑰，在歐洲的涵蓋率最佳。',
   'admin.transitProvider.googleHint': '使用上方的 Google 金鑰，涵蓋 Transitous 沒有資料的地區。依每次搜尋計費——未設定金鑰時仍使用 Transitous。',
   'admin.transitProvider.noKeyWarning': '已選擇 Google，但尚未設定 Google 金鑰——大眾運輸搜尋仍在使用 Transitous。請在上方的 API 金鑰中新增金鑰。',
   'admin.transitProvider.personalKeyWarning': '只設定了你自己的 Google 金鑰，因此其他成員的搜尋仍會回退到 Transitous。請以管理員身分在上方儲存金鑰，使其套用至整個執行個體。',
+  'admin.transitProvider.amapHint':
+    '使用上方的高德金鑰，涵蓋中國大陸——當地 Transitous 沒有任何資料。高德回傳的是行程時長而非發車時刻，因此顯示的時間為估算值。',
+  'admin.transitProvider.amapNoKeyWarning':
+    '已選擇 Amap，但尚未設定 Amap 金鑰——大眾運輸搜尋仍在使用 Transitous。請在上方的 API 金鑰中新增金鑰。',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    '只設定了你自己的 Amap 金鑰，因此其他成員的搜尋仍會回退到 Transitous。請以管理員身分在上方儲存金鑰，使其套用至整個執行個體。',
   'admin.placeShadow.title': '地點搜尋紀錄',
   'admin.placeShadow.subtitle':
     '記錄使用者選了哪一筆搜尋結果，以便日後用真實的搜尋來評估另一套地點索引。資料不會離開本執行個體，管理員隨時可以匯出或刪除紀錄。',

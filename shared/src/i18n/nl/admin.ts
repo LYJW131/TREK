@@ -180,10 +180,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Welke dienst het ov-zoeken beantwoordt.',
   'admin.transitProvider.transitous': 'Transitous (gratis)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'GTFS-feeds van de community. Gratis en zonder sleutel, met de beste dekking in Europa.',
   'admin.transitProvider.googleHint': 'Gebruikt de Google-sleutel hierboven, voor regio\'s zonder Transitous-data. Wordt per zoekopdracht afgerekend — zolang er geen sleutel is, wordt Transitous gebruikt.',
   'admin.transitProvider.noKeyWarning': 'Google is geselecteerd, maar er is geen Google-sleutel ingesteld — het ov-zoeken gebruikt nog steeds Transitous. Voeg hierboven een sleutel toe bij API-sleutels.',
   'admin.transitProvider.personalKeyWarning': 'Alleen je eigen Google-sleutel is ingesteld, dus het zoeken van andere leden valt nog steeds terug op Transitous. Sla de sleutel hierboven op als beheerder om hem instantiebreed toe te passen.',
+  'admin.transitProvider.amapHint':
+    'Gebruikt de Amap-sleutel hierboven, voor het vasteland van China, waar Transitous geen gegevens heeft. Amap geeft reisduren in plaats van vertrektijden, dus de getoonde tijden zijn schattingen.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap is geselecteerd, maar er is geen Amap-sleutel ingesteld — het ov-zoeken gebruikt nog steeds Transitous. Voeg hierboven een sleutel toe bij API-sleutels.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Alleen je eigen Amap-sleutel is ingesteld, dus het zoeken van andere leden valt nog steeds terug op Transitous. Sla de sleutel hierboven op als beheerder om hem instantiebreed toe te passen.',
   'admin.placeShadow.title': 'Logboek van plaatszoekopdrachten',
   'admin.placeShadow.subtitle':
     'Vastleggen welk zoekresultaat is gekozen, zodat een andere plaatsindex later aan echte zoekopdrachten kan worden getoetst. Er verlaat niets deze instantie en een beheerder kan het logboek altijd exporteren of verwijderen.',

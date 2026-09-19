@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Toevoegen aan dag',
   'transit.itinerary': 'Reisplan',
   'transit.attribution': 'Routegegevens via',
+  'transit.estimatedTimes':
+    'Tijden zijn geschat — deze aanbieder publiceert geen vertrektijden.',
   'transport.modeManual': 'Handmatig',
   'transport.modeAutomated': 'Automatisch',
   'transit.sectionTitle': 'Automatisch openbaar vervoer',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Duur',
   'transit.transfersLabel': 'Overstappen',
   'transit.walkLabel': 'Lopen',
-  'transit.searchHint': 'Zoek echte verbindingen en voeg ze direct toe aan de dag — gegevens via Transitous.',
+  'transit.searchHint': 'Zoek echte verbindingen en voeg ze direct toe aan de dag.',
 };
 export default trip;

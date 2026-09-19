@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { getAppUrl, readEnv } from '../../app-config';
 import { buildUserAgent } from '../maps/maps.helpers';
 import { GoogleTransitProvider } from './google-transit.provider';
+import { AmapTransitProvider } from './amap-transit.provider';
 import type { TransitProvider } from '@trek/shared';
 import {
   deriveTransitStats,
@@ -154,7 +155,24 @@ function mapStop(p: MotisPlaceRaw | undefined, kind: 'departure' | 'arrival'): T
 
 @Injectable()
 export class TransitService {
-  constructor(private readonly google: GoogleTransitProvider) {}
+  constructor(
+    private readonly google: GoogleTransitProvider,
+    private readonly amap: AmapTransitProvider,
+  ) {}
+
+  /**
+   * Which backend answers this caller, decided once so the request and the
+   * label on the response cannot disagree.
+   *
+   * Both keyed providers gate on their own key resolving (see their
+   * `isActive`), so an admin who picks one and has not pasted a key yet keeps
+   * getting Transitous rather than an error on every search.
+   */
+  private backendFor(userId: number): TransitProvider {
+    if (this.google.isActive(userId)) return 'google';
+    if (this.amap.isActive(userId)) return 'amap';
+    return 'transitous';
+  }
 
   /**
    * Station/place search for the from/to pickers. `near` biases results.
@@ -172,7 +190,7 @@ export class TransitService {
     const text = (query || '').trim();
     // Answered before either backend is consulted, so it reports the one that
     // WOULD have been asked rather than claiming nobody was.
-    const provider: TransitProvider = this.google.isActive(userId) ? 'google' : 'transitous';
+    const provider: TransitProvider = this.backendFor(userId);
     if (text.length < 2) return { results: [], provider };
     if (text.length > 200) {
       const e = new Error('Query too long') as Error & { status: number };
@@ -182,6 +200,9 @@ export class TransitService {
 
     if (provider === 'google') {
       return { ...(await this.google.geocode(text, language, near && isCoord(near) ? near : undefined, userId)), provider };
+    }
+    if (provider === 'amap') {
+      return { ...(await this.amap.geocode(text, language, near && isCoord(near) ? near : undefined, userId)), provider };
     }
 
     const params = new URLSearchParams({ text });
@@ -253,8 +274,12 @@ export class TransitService {
 
     // After validation on purpose: whichever backend answers, the caller is held
     // to the same coordinate/mode/transfer contract and gets the same 400s.
-    if (this.google.isActive(userId)) {
+    const backend = this.backendFor(userId);
+    if (backend === 'google') {
       return { ...(await this.google.plan(q, language, userId)), provider: 'google' };
+    }
+    if (backend === 'amap') {
+      return { ...(await this.amap.plan(q, language, userId)), provider: 'amap' };
     }
 
     const key = `plan:${params.toString()}`;

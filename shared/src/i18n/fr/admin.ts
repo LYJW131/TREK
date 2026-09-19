@@ -181,10 +181,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Quel service répond à la recherche de transports en commun.',
   'admin.transitProvider.transitous': 'Transitous (gratuit)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Flux GTFS communautaires. Gratuit et sans clé, avec la meilleure couverture en Europe.',
   'admin.transitProvider.googleHint': 'Utilise la clé Google ci-dessus, pour les régions sans données Transitous. Facturé à la recherche — tant qu\'aucune clé n\'est définie, Transitous est utilisé.',
   'admin.transitProvider.noKeyWarning': 'Google est sélectionné, mais aucune clé Google n\'est configurée — la recherche de transports utilise toujours Transitous. Ajoutez une clé dans Clés d\'API ci-dessus.',
   'admin.transitProvider.personalKeyWarning': 'Seule votre propre clé Google est définie : la recherche des autres membres continue de basculer sur Transitous. Enregistrez la clé ci-dessus en tant qu\'administrateur pour l\'appliquer à toute l\'instance.',
+  'admin.transitProvider.amapHint':
+    "Utilise la clé Amap ci-dessus, pour la Chine continentale, où Transitous n'a aucune donnée. Amap renvoie des durées de trajet plutôt que des heures de départ : les horaires affichés sont donc des estimations.",
+  'admin.transitProvider.amapNoKeyWarning':
+    "Amap est sélectionné, mais aucune clé Amap n'est configurée — la recherche de transports utilise toujours Transitous. Ajoutez une clé dans Clés d'API ci-dessus.",
+  'admin.transitProvider.amapPersonalKeyWarning':
+    "Seule votre propre clé Amap est définie : la recherche des autres membres continue de basculer sur Transitous. Enregistrez la clé ci-dessus en tant qu'administrateur pour l'appliquer à toute l'instance.",
   'admin.placeShadow.title': 'Journal des recherches de lieux',
   'admin.placeShadow.subtitle':
     'Enregistrer quel résultat de recherche a été retenu, afin de pouvoir évaluer plus tard un autre index de lieux sur de vraies recherches. Rien ne quitte cette instance, et un administrateur peut exporter ou supprimer le journal à tout moment.',

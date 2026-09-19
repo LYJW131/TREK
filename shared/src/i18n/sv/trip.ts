@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Lägg till dag',
   'transit.itinerary': 'Reseplan',
   'transit.attribution': 'Ruttdata via',
+  'transit.estimatedTimes':
+    'Tiderna är uppskattade — den här leverantören publicerar inga avgångstider.',
   'transport.modeManual': 'Manuell',
   'transport.modeAutomated': 'Automatisk',
   'transit.sectionTitle': 'Automatisk kollektivtrafik',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Restid',
   'transit.transfersLabel': 'Byten',
   'transit.walkLabel': 'Gång',
-  'transit.searchHint': 'Sök verkliga förbindelser och lägg till dem direkt i dagen – data via Transitous.',
+  'transit.searchHint': 'Sök verkliga förbindelser och lägg till dem direkt i dagen.',
 };
 export default trip;

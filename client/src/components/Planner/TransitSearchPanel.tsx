@@ -12,7 +12,8 @@ import type { TransitProvider } from '@trek/shared'
 
 /**
  * Public transit route search (#1065), backed by Transitous (MOTIS) through the
- * server proxy — no paid providers. Google-Maps-like flow in TREK's clean style:
+ * server proxy by default — with Google or Amap behind the same routes when an
+ * admin picks one, which the credit under the results names. Google-Maps-like flow in TREK's clean style:
  * pick from/to (stop search + the day's own places as quick picks), filter by
  * mode and preference, compare the returned itineraries, then add the chosen
  * one to the day. The result is saved as a regular transport reservation
@@ -43,6 +44,15 @@ export interface PickedPlace { name: string; lat: number; lng: number }
 const PROVIDER_NAMES: Record<TransitProvider, string> = {
   transitous: 'Transitous',
   google: 'Google',
+  amap: '高德地图 (Amap)',
+}
+
+// Where the credit under the results points. Transitous asks for the feed list
+// specifically; the other two get their own front page.
+const PROVIDER_LINKS: Record<TransitProvider, string> = {
+  transitous: 'https://transitous.org/sources/',
+  google: 'https://www.google.com/maps',
+  amap: 'https://www.amap.com',
 }
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -644,7 +654,14 @@ export default function TransitSearchPanel({ day, days, places, accommodations =
             ))}
             <div className="text-content-faint" style={{ fontSize: 'calc(10.5px * var(--fs-scale-caption, 1))', textAlign: 'center', marginTop: 2 }}>
               {t('transit.attribution')}{' '}
-              <a href="https://transitous.org/sources/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>Transitous</a>
+              <a href={PROVIDER_LINKS[provider ?? 'transitous']} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'underline' }}>
+                {PROVIDER_NAMES[provider ?? 'transitous']}
+              </a>
+              {/* Amap answers with durations, not departures — the clock on
+                  these cards is derived from the time that was searched for.
+                  Said here rather than on every card: it is a property of the
+                  backend, not of one connection. */}
+              {provider === 'amap' && <div style={{ marginTop: 2 }}>{t('transit.estimatedTimes')}</div>}
             </div>
           </div>
         )}

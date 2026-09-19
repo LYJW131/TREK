@@ -177,10 +177,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Qual serviço responde à busca de transporte público.',
   'admin.transitProvider.transitous': 'Transitous (grátis)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Feeds GTFS da comunidade. Gratuito e sem chave, com a melhor cobertura na Europa.',
   'admin.transitProvider.googleHint': 'Usa a chave do Google acima, para regiões sem dados no Transitous. Cobrado por busca — o Transitous é usado enquanto nenhuma chave estiver configurada.',
   'admin.transitProvider.noKeyWarning': 'O Google está selecionado, mas nenhuma chave do Google está configurada — a busca de transporte ainda usa o Transitous. Adicione uma chave em Chaves de API acima.',
   'admin.transitProvider.personalKeyWarning': 'Apenas a sua própria chave do Google está definida, então a busca dos outros membros ainda cai no Transitous. Salve a chave acima como admin para aplicá-la a toda a instância.',
+  'admin.transitProvider.amapHint':
+    'Usa a chave da Amap acima, para a China continental, onde a Transitous não tem dados. A Amap responde com durações de viagem em vez de horários de partida, então os horários exibidos são estimativas.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'O Amap está selecionado, mas nenhuma chave do Amap está configurada — a busca de transporte ainda usa o Transitous. Adicione uma chave em Chaves de API acima.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Apenas a sua própria chave do Amap está definida, então a busca dos outros membros ainda cai no Transitous. Salve a chave acima como admin para aplicá-la a toda a instância.',
   'admin.placeShadow.title': 'Registo de pesquisas de locais',
   'admin.placeShadow.subtitle':
     'Registar qual resultado de pesquisa foi escolhido, para que outro índice de locais possa ser avaliado depois com pesquisas reais. Nada sai desta instância e um administrador pode exportar ou apagar o registo a qualquer momento.',

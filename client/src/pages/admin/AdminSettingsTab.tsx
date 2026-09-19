@@ -7,6 +7,7 @@ import CustomSelect from '../../components/shared/CustomSelect'
 import GoogleOptions from './GoogleOptions'
 import ProviderBlock from './ProviderBlock'
 import TrekApiCard from './TrekApiCard'
+import type { TransitProvider } from '@trek/shared'
 import type { TranslationFn } from '../../types'
 import type { useAdmin } from './useAdmin'
 
@@ -27,6 +28,7 @@ export default function AdminSettingsTab({ admin, t }: AdminSettingsTabProps): R
     placesEnrichEnabled, setPlacesEnrichEnabledState,
     transitProvider, setTransitProviderState,
     transitGoogleKeySource, setTransitGoogleKeySource,
+    transitAmapKeySource, setTransitAmapKeySource,
     placeShadowEnabled, setPlaceShadowEnabledState,
     oidcConfig, setOidcConfig, savingOidc, setSavingOidc,
     passwordLogin, setPasswordLogin, passwordRegistration, setPasswordRegistration,
@@ -574,9 +576,10 @@ export default function AdminSettingsTab({ admin, t }: AdminSettingsTabProps): R
           </ProviderBlock>
           {/* Transit Backend (#1699) — Transitous has no GTFS for much of Asia,
               so an install can point transit search at Google instead, on the
-              same key. Falls back to Transitous when no key resolves. A block of
-              its own rather than a row inside the Google one: picking Transitous
-              is a decision about a provider that has nothing to do with a key. */}
+              same key, or at Amap inside mainland China, on the Amap key above.
+              Falls back to Transitous when no key resolves. A block of its own
+              rather than a row inside the Google one: picking Transitous is a
+              decision about a provider that has nothing to do with a key. */}
           <ProviderBlock title={t('admin.transitProvider.title')}>
             <div>
               <p className="text-xs text-content-faint">{t('admin.transitProvider.subtitle')}</p>
@@ -591,23 +594,30 @@ export default function AdminSettingsTab({ admin, t }: AdminSettingsTabProps): R
                   // picked again; this one reports every pick, and a no-op PUT is still
                   // a write on an audited settings route.
                   if (value === transitProvider) return
-                  const next = value === 'google' ? 'google' : 'transitous'
+                  const next: TransitProvider =
+                    value === 'google' ? 'google' : value === 'amap' ? 'amap' : 'transitous'
                   const previous = transitProvider
                   setTransitProviderState(next)
                   try {
                     const saved = await adminApi.updateTransitProvider(next)
                     setTransitGoogleKeySource(saved.googleKeySource)
+                    setTransitAmapKeySource(saved.amapKeySource ?? null)
                   } catch { setTransitProviderState(previous) }
                 }}
                 options={[
                   { value: 'transitous', label: t('admin.transitProvider.transitous') },
                   { value: 'google', label: t('admin.transitProvider.google') },
+                  { value: 'amap', label: t('admin.transitProvider.amap') },
                 ]}
                 size="sm"
                 style={{ marginTop: 8 }}
               />
               <p className="text-xs text-content-faint mt-1.5">
-                {transitProvider === 'google' ? t('admin.transitProvider.googleHint') : t('admin.transitProvider.transitousHint')}
+                {transitProvider === 'google'
+                  ? t('admin.transitProvider.googleHint')
+                  : transitProvider === 'amap'
+                    ? t('admin.transitProvider.amapHint')
+                    : t('admin.transitProvider.transitousHint')}
               </p>
 
               {/* Picking Google without a key that resolves changes nothing — the
@@ -625,6 +635,20 @@ export default function AdminSettingsTab({ admin, t }: AdminSettingsTabProps): R
                 <p className="flex items-start gap-2 text-xs text-warning bg-warning-soft border border-warning/30 rounded-lg px-3 py-2 mt-2">
                   <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
                   {t('admin.transitProvider.personalKeyWarning')}
+                </p>
+              )}
+              {/* Same two warnings for Amap: the fallback is just as silent, and
+                  a personal Amap key serves this admin and nobody else. */}
+              {transitProvider === 'amap' && transitAmapKeySource === null && (
+                <p className="flex items-start gap-2 text-xs text-warning bg-warning-soft border border-warning/30 rounded-lg px-3 py-2 mt-2">
+                  <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                  {t('admin.transitProvider.amapNoKeyWarning')}
+                </p>
+              )}
+              {transitProvider === 'amap' && transitAmapKeySource === 'user-row' && (
+                <p className="flex items-start gap-2 text-xs text-warning bg-warning-soft border border-warning/30 rounded-lg px-3 py-2 mt-2">
+                  <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                  {t('admin.transitProvider.amapPersonalKeyWarning')}
                 </p>
               )}
             </div>

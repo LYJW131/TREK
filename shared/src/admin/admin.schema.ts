@@ -115,7 +115,7 @@ export type AdminTestNotificationRequest = z.infer<typeof adminTestNotificationR
 // Which backend answers /api/transit (#1699). Transitous stays the default and
 // the fallback: it is free and keyless, so an install that never opens this
 // switch — or that picks Google without a key — keeps costing nothing.
-export const TRANSIT_PROVIDERS = ['transitous', 'google'] as const;
+export const TRANSIT_PROVIDERS = ['transitous', 'google', 'amap'] as const;
 export type TransitProvider = (typeof TRANSIT_PROVIDERS)[number];
 
 export const adminTransitProviderRequestSchema = z.object({

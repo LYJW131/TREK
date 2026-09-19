@@ -603,6 +603,36 @@ describe('TransitSearchPanel', () => {
     expect(screen.getAllByText('Walking').length).toBe(3)
   })
 
+  /**
+   * The credit under the results is the only place the backend is named on a
+   * successful search, and Amap needs one sentence more than the other two:
+   * it publishes journey lengths, not departures, so the clock on these cards
+   * is derived rather than scheduled.
+   */
+  it('FE-PLANNER-TRANSIT-031: results credit the backend that answered, and Amap says its times are estimates', async () => {
+    const user = userEvent.setup()
+    transitApiMock.plan.mockResolvedValueOnce({ itineraries: [ITINERARY], provider: 'amap' })
+    render(<TransitSearchPanel {...makeProps()} />)
+    await pickFromAndTo(user)
+    await user.click(screen.getByRole('button', { name: /^Search$/ }))
+
+    const credit = await screen.findByRole('link', { name: /高德地图/ })
+    expect(credit).toHaveAttribute('href', 'https://www.amap.com')
+    expect(screen.getByText(/Times are estimated/)).toBeInTheDocument()
+  })
+
+  it('FE-PLANNER-TRANSIT-032: Transitous keeps its own credit and gets no estimate note', async () => {
+    const user = userEvent.setup()
+    transitApiMock.plan.mockResolvedValueOnce({ itineraries: [ITINERARY], provider: 'transitous' })
+    render(<TransitSearchPanel {...makeProps()} />)
+    await pickFromAndTo(user)
+    await user.click(screen.getByRole('button', { name: /^Search$/ }))
+
+    const credit = await screen.findByRole('link', { name: 'Transitous' })
+    expect(credit).toHaveAttribute('href', 'https://transitous.org/sources/')
+    expect(screen.queryByText(/Times are estimated/)).not.toBeInTheDocument()
+  })
+
   it('FE-PLANNER-TRANSIT-030: no row is headed with the destination of its own walk', async () => {
     const user = userEvent.setup()
     transitApiMock.plan.mockResolvedValueOnce({ itineraries: [WALK_BRACKETED] })

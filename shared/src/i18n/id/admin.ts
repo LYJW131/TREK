@@ -223,10 +223,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Layanan mana yang menjawab pencarian transportasi umum.',
   'admin.transitProvider.transitous': 'Transitous (gratis)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Umpan GTFS komunitas. Gratis dan tanpa kunci, dengan cakupan terbaik di Eropa.',
   'admin.transitProvider.googleHint': 'Menggunakan kunci Google di atas, untuk wilayah yang tidak memiliki data Transitous. Ditagih per pencarian — selama belum ada kunci, Transitous yang dipakai.',
   'admin.transitProvider.noKeyWarning': 'Google dipilih, tetapi belum ada kunci Google yang dikonfigurasi — pencarian transportasi masih memakai Transitous. Tambahkan kunci di Kunci API di atas.',
   'admin.transitProvider.personalKeyWarning': 'Hanya kunci Google milikmu yang disetel, sehingga pencarian anggota lain tetap kembali ke Transitous. Simpan kunci di atas sebagai admin agar berlaku untuk seluruh instance.',
+  'admin.transitProvider.amapHint':
+    'Menggunakan kunci Amap di atas, untuk Tiongkok daratan, tempat Transitous tidak memiliki data. Amap menjawab dengan durasi perjalanan alih-alih waktu keberangkatan, jadi waktu yang ditampilkan adalah perkiraan.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap dipilih, tetapi belum ada kunci Amap yang dikonfigurasi — pencarian transportasi masih memakai Transitous. Tambahkan kunci di Kunci API di atas.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Hanya kunci Amap milikmu yang disetel, sehingga pencarian anggota lain tetap kembali ke Transitous. Simpan kunci di atas sebagai admin agar berlaku untuk seluruh instance.',
   'admin.placeShadow.title': 'Log pencarian tempat',
   'admin.placeShadow.subtitle':
     'Mencatat hasil pencarian mana yang dipilih, agar indeks tempat lain nanti bisa diukur dengan pencarian sungguhan. Tidak ada yang meninggalkan instans ini, dan admin bisa mengekspor atau menghapus log kapan saja.',

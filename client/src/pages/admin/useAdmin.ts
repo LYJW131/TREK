@@ -110,9 +110,10 @@ export function useAdmin() {
   // request-time fallback to Transitous is silent by design.
   const [transitProvider, setTransitProviderState] = useState<TransitProvider>('transitous')
   const [transitGoogleKeySource, setTransitGoogleKeySource] = useState<TransitKeySource>(null)
+  const [transitAmapKeySource, setTransitAmapKeySource] = useState<TransitKeySource>(null)
   useEffect(() => {
     adminApi.getTransitProvider()
-      .then(d => { setTransitProviderState(d.provider); setTransitGoogleKeySource(d.googleKeySource) })
+      .then(d => { setTransitProviderState(d.provider); setTransitGoogleKeySource(d.googleKeySource); setTransitAmapKeySource(d.amapKeySource ?? null) })
       .catch(() => {})
   }, [])
   // Place shadow log — off unless an admin turns it on, so the initial state is
@@ -483,6 +484,7 @@ export function useAdmin() {
     placesEnrichEnabled, setPlacesEnrichEnabledState,
     transitProvider, setTransitProviderState,
     transitGoogleKeySource, setTransitGoogleKeySource,
+    transitAmapKeySource, setTransitAmapKeySource,
     placeShadowEnabled, setPlaceShadowEnabledState,
     collabFeatures, setCollabFeatures,
     oidcConfig, setOidcConfig, savingOidc, setSavingOidc,

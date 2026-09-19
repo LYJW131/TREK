@@ -218,10 +218,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': '대중교통 검색에 응답하는 서비스입니다.',
   'admin.transitProvider.transitous': 'Transitous (무료)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': '커뮤니티 GTFS 피드. 무료이며 키가 필요 없고 유럽 커버리지가 가장 좋습니다.',
   'admin.transitProvider.googleHint': '위의 Google 키를 사용하여 Transitous에 데이터가 없는 지역을 처리합니다. 검색당 과금되며, 키가 없으면 Transitous를 사용합니다.',
   'admin.transitProvider.noKeyWarning': 'Google이 선택되었지만 Google 키가 설정되지 않았습니다 — 대중교통 검색은 여전히 Transitous를 사용합니다. 위의 API 키에서 키를 추가하세요.',
   'admin.transitProvider.personalKeyWarning': '본인의 Google 키만 설정되어 있어 다른 멤버의 검색은 여전히 Transitous로 대체됩니다. 인스턴스 전체에 적용하려면 관리자로 위에서 키를 저장하세요.',
+  'admin.transitProvider.amapHint':
+    '위의 Amap 키를 사용합니다. Transitous에 데이터가 없는 중국 본토용입니다. Amap은 출발 시각이 아니라 소요 시간을 반환하므로 표시되는 시각은 추정치입니다.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Amap이 선택되었지만 Amap 키가 설정되지 않았습니다 — 대중교통 검색은 여전히 Transitous를 사용합니다. 위의 API 키에서 키를 추가하세요.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    '본인의 Amap 키만 설정되어 있어 다른 멤버의 검색은 여전히 Transitous로 대체됩니다. 인스턴스 전체에 적용하려면 관리자로 위에서 키를 저장하세요.',
   'admin.placeShadow.title': '장소 검색 기록',
   'admin.placeShadow.subtitle':
     '어떤 검색 결과가 선택되었는지 기록하여, 나중에 다른 장소 색인을 실제 검색으로 평가할 수 있게 합니다. 이 인스턴스 밖으로 나가는 것은 없으며 관리자는 언제든지 기록을 내보내거나 삭제할 수 있습니다.',

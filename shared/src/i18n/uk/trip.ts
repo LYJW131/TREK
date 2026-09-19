@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Додати до дня',
   'transit.itinerary': 'Маршрут',
   'transit.attribution': 'Дані маршрутизації через',
+  'transit.estimatedTimes':
+    'Час приблизний — цей провайдер не публікує час відправлення.',
   'transport.modeManual': 'Вручну',
   'transport.modeAutomated': 'Автоматично',
   'transit.sectionTitle': 'Автоматичний громадський транспорт',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Тривалість',
   'transit.transfersLabel': 'Пересадки',
   'transit.walkLabel': 'Пішки',
-  'transit.searchHint': 'Шукайте справжні маршрути та додавайте їх одразу до дня — дані від Transitous.',
+  'transit.searchHint': 'Шукайте справжні маршрути та додавайте їх одразу до дня.',
 };
 export default trip;

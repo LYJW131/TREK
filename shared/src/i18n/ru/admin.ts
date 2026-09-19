@@ -181,10 +181,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Какая служба отвечает на поиск общественного транспорта.',
   'admin.transitProvider.transitous': 'Transitous (бесплатно)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'GTFS-фиды сообщества. Бесплатно и без ключа, с лучшим покрытием в Европе.',
   'admin.transitProvider.googleHint': 'Использует указанный выше ключ Google для регионов, по которым у Transitous нет данных. Оплачивается за каждый поиск — пока ключ не задан, используется Transitous.',
   'admin.transitProvider.noKeyWarning': 'Выбран Google, но ключ Google не настроен — поиск транспорта по-прежнему использует Transitous. Добавьте ключ в разделе «Ключи API» выше.',
   'admin.transitProvider.personalKeyWarning': 'Задан только ваш собственный ключ Google, поэтому поиск других участников по-прежнему возвращается к Transitous. Сохраните ключ выше от имени администратора, чтобы он действовал для всей установки.',
+  'admin.transitProvider.amapHint':
+    'Использует ключ Amap выше — для материкового Китая, где у Transitous нет данных. Amap возвращает длительность поездки, а не время отправления, поэтому показанное время является оценкой.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Выбран Amap, но ключ Amap не настроен — поиск транспорта по-прежнему использует Transitous. Добавьте ключ в разделе «Ключи API» выше.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Задан только ваш собственный ключ Amap, поэтому поиск других участников по-прежнему возвращается к Transitous. Сохраните ключ выше от имени администратора, чтобы он действовал для всей установки.',
   'admin.placeShadow.title': 'Журнал поиска мест',
   'admin.placeShadow.subtitle':
     'Записывать, какой результат поиска был выбран, чтобы позже оценить другой индекс мест на реальных запросах. Ничего не покидает этот сервер, и администратор может в любой момент выгрузить или удалить журнал.',

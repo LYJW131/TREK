@@ -439,7 +439,7 @@ describe('AddonsService transit provider', () => {
 
   it('ADDONS-SVC-086 an unset provider reads as Transitous, with no key anywhere', () => {
     dbMock._stmt.get.mockReturnValue(undefined);
-    expect(svc().getTransitProvider()).toEqual({ provider: 'transitous', googleKeySource: null });
+    expect(svc().getTransitProvider()).toEqual({ provider: 'transitous', googleKeySource: null, amapKeySource: null });
   });
 
   it('ADDONS-SVC-087 only a known provider name is honoured', () => {

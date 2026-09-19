@@ -174,10 +174,17 @@ const admin: TranslationStrings = {
   'admin.transitProvider.subtitle': 'Która usługa odpowiada na wyszukiwanie transportu publicznego.',
   'admin.transitProvider.transitous': 'Transitous (bezpłatnie)',
   'admin.transitProvider.google': 'Google',
+  'admin.transitProvider.amap': 'Amap (高德地图)',
   'admin.transitProvider.transitousHint': 'Społecznościowe źródła GTFS. Bezpłatne i bez klucza, z najlepszym zasięgiem w Europie.',
   'admin.transitProvider.googleHint': 'Używa powyższego klucza Google w regionach, dla których Transitous nie ma danych. Rozliczane za wyszukiwanie — dopóki nie ustawiono klucza, działa Transitous.',
   'admin.transitProvider.noKeyWarning': 'Wybrano Google, ale nie skonfigurowano klucza Google — wyszukiwanie transportu nadal korzysta z Transitous. Dodaj klucz w sekcji Klucze API powyżej.',
   'admin.transitProvider.personalKeyWarning': 'Ustawiono tylko Twój własny klucz Google, więc wyszukiwanie pozostałych członków nadal wraca do Transitous. Zapisz klucz powyżej jako administrator, aby obowiązywał w całej instancji.',
+  'admin.transitProvider.amapHint':
+    'Używa klucza Amap powyżej, dla Chin kontynentalnych, gdzie Transitous nie ma danych. Amap zwraca czas przejazdu zamiast godzin odjazdu, więc pokazywane godziny są szacunkowe.',
+  'admin.transitProvider.amapNoKeyWarning':
+    'Wybrano Amap, ale nie skonfigurowano klucza Amap — wyszukiwanie transportu nadal korzysta z Transitous. Dodaj klucz w sekcji Klucze API powyżej.',
+  'admin.transitProvider.amapPersonalKeyWarning':
+    'Ustawiono tylko Twój własny klucz Amap, więc wyszukiwanie pozostałych członków nadal wraca do Transitous. Zapisz klucz powyżej jako administrator, aby obowiązywał w całej instancji.',
   'admin.placeShadow.title': 'Dziennik wyszukiwania miejsc',
   'admin.placeShadow.subtitle':
     'Zapisywanie, który wynik wyszukiwania został wybrany, aby później ocenić inny indeks miejsc na prawdziwych zapytaniach. Nic nie opuszcza tej instancji, a administrator może w każdej chwili wyeksportować lub usunąć dziennik.',

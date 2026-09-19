@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': 'Zum Tag hinzufügen',
   'transit.itinerary': 'Verbindung',
   'transit.attribution': 'Routing-Daten via',
+  'transit.estimatedTimes':
+    'Zeiten sind geschätzt — dieser Anbieter veröffentlicht keine Abfahrtszeiten.',
   'transport.modeManual': 'Manuell',
   'transport.modeAutomated': 'Automatisch',
   'transit.sectionTitle': 'Automatische ÖPNV-Verbindungen',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': 'Dauer',
   'transit.transfersLabel': 'Umstiege',
   'transit.walkLabel': 'Fußweg',
-  'transit.searchHint': 'Echte Verbindungen suchen und direkt zum Tag hinzufügen — Daten via Transitous.',
+  'transit.searchHint': 'Echte Verbindungen suchen und direkt zum Tag hinzufügen.',
 };
 export default trip;

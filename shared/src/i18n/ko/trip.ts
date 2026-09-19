@@ -76,6 +76,8 @@ const trip: TranslationStrings = {
   'transit.addToDay': '일정에 추가',
   'transit.itinerary': '여정',
   'transit.attribution': '경로 데이터 제공:',
+  'transit.estimatedTimes':
+    '시각은 추정치입니다 — 이 제공자는 출발 시각을 공개하지 않습니다.',
   'transport.modeManual': '수동',
   'transport.modeAutomated': '자동',
   'transit.sectionTitle': '자동 대중교통',
@@ -87,6 +89,6 @@ const trip: TranslationStrings = {
   'transit.durationLabel': '소요 시간',
   'transit.transfersLabel': '환승',
   'transit.walkLabel': '도보',
-  'transit.searchHint': '실제 연결편을 검색하고 바로 일정에 추가하세요 — 데이터 제공: Transitous.',
+  'transit.searchHint': '실제 연결편을 검색하고 바로 일정에 추가하세요.',
 };
 export default trip;
