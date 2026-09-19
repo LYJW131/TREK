@@ -14,6 +14,18 @@ type AnimatedMap = L.Map & {
 const COORD_EPSILON = 1e-9
 const ZOOM_EPSILON = 1e-6
 
+/**
+ * How many frames the camera has to hold still before the gesture is over.
+ *
+ * A fixed number of frames after `moveend`/`zoomend` is not enough, because the
+ * SDK raises those before its own easing has finished: a wheel zoom then
+ * reported two positions to Leaflet while the ground eased through a dozen, and
+ * the markers jumped to the end in one step. Watching for the camera to stop
+ * changing instead ends the follow when the motion really ends — including
+ * inertial panning, which keeps moving long after `dragend`.
+ */
+const IDLE_FRAMES = 4
+
 /** Amap owns gestures; Leaflet owns app commands and the WGS-84 overlays. */
 export function attachAmapCamera(map: L.Map, amap: AmapMap): () => void {
   const camera = map as AnimatedMap
@@ -39,14 +51,14 @@ export function attachAmapCamera(map: L.Map, amap: AmapMap): () => void {
     try { update() } finally { syncing = false }
   }
 
-  const follow = () => {
+  const follow = (): boolean => {
     const center = amap.getCenter()
     const wgs = gcj02ToWgs84(center.lat, center.lng)
     // The SDK defaults to two decimal places, visibly quantizing distant pins.
     const zoom = amap.getZoom(6)
     const at = map.getCenter()
     const changedZoom = Math.abs(map.getZoom() - zoom) > ZOOM_EPSILON
-    if (!changedZoom && Math.abs(at.lat - wgs.lat) < COORD_EPSILON && Math.abs(at.lng - wgs.lng) < COORD_EPSILON) return
+    if (!changedZoom && Math.abs(at.lat - wgs.lat) < COORD_EPSILON && Math.abs(at.lng - wgs.lng) < COORD_EPSILON) return false
     guarded(() => {
       if (!moving) {
         camera._stop()
@@ -61,6 +73,7 @@ export function attachAmapCamera(map: L.Map, amap: AmapMap): () => void {
       // to it, and must reproject when the pixel origin changes at fixed zoom.
       camera._move(L.latLng(wgs.lat, wgs.lng), zoom, { pinch: true })
     })
+    return true
   }
 
   const finish = () => {
@@ -78,9 +91,9 @@ export function attachAmapCamera(map: L.Map, amap: AmapMap): () => void {
 
   const tick = () => {
     frame = 0
-    follow()
-    if (settling && --settling === 0) finish()
-    else frame = requestAnimationFrame(tick)
+    if (follow()) settling = 0
+    else if (++settling >= IDLE_FRAMES) { finish(); return }
+    frame = requestAnimationFrame(tick)
   }
   const start = () => {
     if (syncing) return
@@ -91,9 +104,9 @@ export function attachAmapCamera(map: L.Map, amap: AmapMap): () => void {
   }
   const end = () => {
     if (syncing) return
-    // moveend and zoomend may precede the final rendered frame. dragend is
-    // deliberately excluded: Amap is still moving during inertial deceleration.
-    settling = 2
+    // moveend and zoomend arrive before the SDK's easing has finished, and
+    // dragend arrives before inertia has. Neither ends the follow; the idle
+    // count above does, once the camera has actually stopped.
     if (!frame) frame = requestAnimationFrame(tick)
   }
 

@@ -19,6 +19,18 @@ function flushFrame() {
   pending.forEach(callback => callback(performance.now()))
 }
 
+/**
+ * Run frames until the bridge stops asking for them.
+ *
+ * The follow ends when the camera has held still for a few frames rather than a
+ * fixed count after the SDK's end event, because the SDK raises `zoomend`
+ * before its own easing has finished — pinning a number here would pin the
+ * wrong contract. The bound only stops a runaway loop from hanging the suite.
+ */
+function flushUntilIdle(limit = 20) {
+  for (let i = 0; i < limit && frames.size; i++) flushFrame()
+}
+
 function sdk() {
   class SdkEvents extends L.Evented {}
   const events = new SdkEvents()
@@ -97,8 +109,7 @@ describe('Amap / Leaflet camera bridge', () => {
     expect(amap.setZoomAndCenter).not.toHaveBeenCalled()
     expect(amap.getZoom).toHaveBeenCalledWith(6)
     events.fire('zoomend')
-    flushFrame()
-    flushFrame()
+    flushUntilIdle()
     expect(ended).toHaveBeenCalledTimes(2) // one zoomend and one moveend
     expect(reset).toHaveBeenCalledTimes(1)
     expect(frames.size).toBe(0)
@@ -122,7 +133,7 @@ describe('Amap / Leaflet camera bridge', () => {
     events.fire('moveend')
     move(31.233, 121.476) // SDK settles after its end notification
     flushFrame()
-    flushFrame()
+    flushUntilIdle()
     expect(map.getCenter().lat).toBeCloseTo(31.233, 6)
     expect(ended).toHaveBeenCalledTimes(1)
     expect(frames.size).toBe(0)
@@ -139,8 +150,7 @@ describe('Amap / Leaflet camera bridge', () => {
     move(31.231, 121.472)
     flushFrame()
     events.fire('moveend')
-    flushFrame()
-    flushFrame()
+    flushUntilIdle()
     expect(path.getAttribute('d')).not.toBe(initial)
     const start = path.getAttribute('d')!.match(/M(-?[\d.]+)[ ,](-?[\d.]+)/)!
     const actual = L.point(Number(start[1]), Number(start[2]))
