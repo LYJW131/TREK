@@ -94,10 +94,18 @@ export function AmapBasemap() {
           viewMode: '2D',
           zoom: map.getZoom(),
           center: [gcj.lng, gcj.lat],
-          // Every one of these off: Leaflet owns the camera and the pointer, and
-          // two maps both reacting to a drag fight each other.
+          // The input switches are off so Leaflet keeps the pointer — two maps both
+          // reacting to one drag fight each other.
+          //
+          // `zoomEnable` is deliberately NOT among them, and the asymmetry is the
+          // whole reason for this comment: `dragEnable: false` only refuses user
+          // input and leaves setCenter working, but `zoomEnable: false` disables
+          // zooming as a capability, so `setZoomAndCenter` silently keeps the zoom
+          // it was built with. The ground then tracks a pan perfectly and stays a
+          // level behind on every zoom — which reads as a rendering bug, not a
+          // flag. The pointer never reaches this map anyway: it sits behind
+          // Leaflet's panes, which are what the browser hit-tests.
           dragEnable: false,
-          zoomEnable: false,
           doubleClickZoom: false,
           keyboardEnable: false,
           rotateEnable: false,
