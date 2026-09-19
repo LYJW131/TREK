@@ -6,6 +6,23 @@ import { useIsDark } from '../../hooks/useIsDark'
 import { useSettingsStore } from '../../store/settingsStore'
 import { loadAmapSdk, type AmapMap } from './amapLoader'
 
+/**
+ * The backdrop's own style, and `pointer-events: none` is the load-bearing part.
+ *
+ * Without it the topmost element under a finger is Amap's `<canvas class="amap-layer">`,
+ * because a positioned child paints above the container it sits in. Leaflet sets
+ * `touch-action: none` on ITS container so it can own gestures; the canvas carries
+ * `touch-action: auto`, so on a touch device the browser applied its own default
+ * instead and a pinch did nothing to the map. On a desktop the same setup worked,
+ * because a wheel event bubbles up to the container either way — which is exactly
+ * why this reached an iPad before it reached anyone's laptop.
+ *
+ * Switching the layer off for pointers also means Amap never sees an event at all,
+ * so the interaction flags passed to the constructor are belt and braces rather
+ * than the mechanism.
+ */
+export const AMAP_HOST_STYLE = 'position:absolute;inset:0;z-index:0;pointer-events:none'
+
 /** Leaflet events that mean the camera moved. `move` fires throughout a drag, so a pan follows. */
 const SYNC_EVENTS = 'move zoom moveend zoomend resize'
 
@@ -77,7 +94,7 @@ export function AmapBasemap() {
     // map and needs no layout of its own. Leaflet's panes start at z-index 200,
     // so anything drawn on the map stays on top without a stacking rule here.
     const host = document.createElement('div')
-    host.style.cssText = 'position:absolute;inset:0;z-index:0'
+    host.style.cssText = AMAP_HOST_STYLE
     container.insertBefore(host, container.firstChild)
 
     // Leaflet paints its own background over whatever is behind it.
@@ -151,8 +168,9 @@ export function AmapBasemap() {
           viewMode: '2D',
           zoom: map.getZoom(),
           center: [gcj.lng, gcj.lat],
-          // The input switches are off so Leaflet keeps the pointer — two maps both
-          // reacting to one drag fight each other.
+          // Belt and braces: with AMAP_HOST_STYLE this map never receives a
+          // pointer event, but two maps both reacting to one drag is the failure
+          // these prevent if that ever changes.
           //
           // `zoomEnable` is deliberately NOT among them, and the asymmetry is the
           // whole reason for this comment: `dragEnable: false` only refuses user

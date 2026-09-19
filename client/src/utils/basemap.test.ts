@@ -101,3 +101,15 @@ describe('attributionForTile', () => {
     expect(attributionForTile(null)).toMatch(/OpenStreetMap/)
   })
 })
+
+describe('the Amap backdrop and the pointer', () => {
+  it('FE-UTIL-BASEMAP-014: the Amap layer is transparent to pointers, or a touch device cannot zoom', async () => {
+    const { AMAP_HOST_STYLE } = await import('../components/Map/AmapBasemap')
+    // Reported from an iPad: pinch did nothing on the vector basemap while the
+    // satellite raster was fine. The canvas is a positioned child of the Leaflet
+    // container, so it paints above it and takes the hit — and it carries
+    // `touch-action: auto` while Leaflet's container carries `none`. A wheel
+    // event bubbles up regardless, which is why no desktop ever saw it.
+    expect(AMAP_HOST_STYLE).toContain('pointer-events:none')
+  })
+})
