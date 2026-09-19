@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpException, Post, Put, Req, UseGuar
 import type { Request } from 'express';
 import { MASKED_SETTING_VALUE } from '@trek/shared';
 import type { User } from '../../types';
-import { SettingsService, isAdminOnlyEndpointSetting } from './settings.service';
+import { SettingsService, isAdminOnlyEndpointSetting, MASKED_SETTING_KEYS } from './settings.service';
 import { SettingUpsertDto, SettingsBulkDto } from './settings.dto';
 import { AdminDefaultUserSettingsDto } from '../admin/admin.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -107,9 +107,27 @@ export class AdminDefaultUserSettingsController {
     private readonly env: RuntimeEnvService,
   ) {}
 
+  /**
+   * The defaults the panel renders, with every secret masked.
+   *
+   * getAdminUserDefaults() decrypts, because the server resolves real values
+   * through it — the Amap 安全密钥 behind /_AMapService is read that way. This
+   * route is the one place those same values reach a browser, so the masking
+   * that getUserSettings does per user has to happen here too. Without it an
+   * admin-set llm_api_key (and now the Amap security code) is served in
+   * cleartext to anybody who opens the admin panel.
+   */
+  private masked(): Record<string, unknown> {
+    const defaults = this.settings.getAdminUserDefaults();
+    for (const key of Object.keys(defaults)) {
+      if (MASKED_SETTING_KEYS.has(key)) defaults[key] = defaults[key] ? MASKED_SETTING_VALUE : '';
+    }
+    return defaults;
+  }
+
   @Get()
   get() {
-    return this.settings.getAdminUserDefaults();
+    return this.masked();
   }
 
   @Put()
@@ -132,7 +150,7 @@ export class AdminDefaultUserSettingsController {
       });
       // Answer with the stored defaults, not the request body: the service normalises
       // and drops unknown keys, and the admin panel renders straight from this.
-      return this.settings.getAdminUserDefaults();
+      return this.masked();
     } catch (err) {
       throw new HttpException({ error: err instanceof Error ? err.message : String(err) }, 400);
     }

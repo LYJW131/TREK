@@ -205,6 +205,11 @@ export class SettingsService {
           continue;
         }
 
+        // The panel renders a masked secret as •••••••• and saves every field it
+        // holds, so an admin who edits one row would otherwise store the mask
+        // over an unrelated secret. Same no-op the per-user upsert already makes.
+        if (MASKED_SETTING_KEYS.has(key) && value === MASKED_SETTING_VALUE) continue;
+
         if (BOOLEAN_KEYS.has(typedKey) && typeof value !== 'boolean') {
           throw new Error(`Setting ${key} must be a boolean`);
         }

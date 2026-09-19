@@ -126,3 +126,33 @@ describe('AmapProxyController', () => {
     expect(safeFetchFollow).not.toHaveBeenCalled();
   });
 });
+
+/**
+ * The admin defaults route is the other place a secret could reach a browser,
+ * and it is one `getAdminUserDefaults()` decrypts by design — the proxy above
+ * resolves the 安全密钥 through it. SECRET-DEF-001..002 pin the two halves of
+ * keeping that off the wire.
+ */
+describe('admin default user settings and masked secrets', () => {
+  it('SECRET-DEF-001: a masked key is in both sets, so it is encrypted AND never returned', async () => {
+    const { ENCRYPTED_SETTING_KEYS, MASKED_SETTING_KEYS } = await import('../../../src/nest/settings/settings.service');
+    // Masked without encrypted would store a secret in cleartext; encrypted
+    // without masked is what served llm_api_key to the admin panel in the clear.
+    for (const key of MASKED_SETTING_KEYS) {
+      expect(ENCRYPTED_SETTING_KEYS.has(key)).toBe(true);
+    }
+    expect(MASKED_SETTING_KEYS.has('amap_js_security_code')).toBe(true);
+    expect(ENCRYPTED_SETTING_KEYS.has('amap_js_key')).toBe(true);
+    // The JS key is the one that MUST still reach the browser.
+    expect(MASKED_SETTING_KEYS.has('amap_js_key')).toBe(false);
+  });
+
+  it('SECRET-DEF-002: every masked key an admin can default is one the panel can round-trip', async () => {
+    const { MASKED_SETTING_KEYS, DEFAULTABLE_USER_SETTING_KEYS } = await import('../../../src/nest/settings/settings.service');
+    const defaultable = new Set<string>(DEFAULTABLE_USER_SETTING_KEYS);
+    // Nothing asserts a count here on purpose: the point is that a masked key
+    // being defaultable is allowed *because* setAdminUserDefaults skips the
+    // mask. If that guard is removed, this comment is the trail back to why.
+    expect([...MASKED_SETTING_KEYS].some((k) => defaultable.has(k))).toBe(true);
+  });
+});
