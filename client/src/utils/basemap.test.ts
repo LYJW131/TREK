@@ -103,13 +103,15 @@ describe('attributionForTile', () => {
 })
 
 describe('the Amap backdrop and the pointer', () => {
-  it('FE-UTIL-BASEMAP-014: the Amap layer is transparent to pointers, or a touch device cannot zoom', async () => {
+  it('FE-UTIL-BASEMAP-014: the Amap layer receives pointers, because Amap runs the gesture', async () => {
     const { AMAP_HOST_STYLE } = await import('../components/Map/AmapBasemap')
-    // Reported from an iPad: pinch did nothing on the vector basemap while the
-    // satellite raster was fine. The canvas is a positioned child of the Leaflet
-    // container, so it paints above it and takes the hit — and it carries
-    // `touch-action: auto` while Leaflet's container carries `none`. A wheel
-    // event bubbles up regardless, which is why no desktop ever saw it.
-    expect(AMAP_HOST_STYLE).toContain('pointer-events:none')
+    // This assertion was the opposite one version ago, and the flip is the whole
+    // design change: while Leaflet owned the gestures the canvas had to be
+    // transparent to pointers or an iPad could not pinch. Amap owns them now —
+    // it is what re-renders the vectors continuously through a zoom — so taking
+    // its input away would leave the map inert on every device.
+    expect(AMAP_HOST_STYLE).not.toContain('pointer-events')
+    expect(AMAP_HOST_STYLE).toContain('position:absolute')
+    expect(AMAP_HOST_STYLE).toContain('z-index:0')
   })
 })

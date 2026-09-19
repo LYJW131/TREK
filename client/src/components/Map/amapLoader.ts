@@ -31,8 +31,13 @@ export interface AmapMap {
   setMapStyle(style: string): void;
   getZoom(): number;
   getCenter(): { lng: number; lat: number };
+  getSize?(): { width: number; height: number };
   destroy(): void;
-  on(event: string, handler: () => void): void;
+  // Amap hands its own event object to the handler; the shapes this app reads
+  // are declared at the call site rather than here, because the SDK's own types
+  // are not published for the `<script>` build.
+  on(event: string, handler: (e: never) => void): void;
+  off(event: string, handler: (e: never) => void): void;
 }
 
 declare global {

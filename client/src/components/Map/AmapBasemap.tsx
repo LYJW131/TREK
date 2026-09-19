@@ -1,85 +1,79 @@
 import { useEffect, useRef } from 'react'
 import { useMap } from 'react-leaflet'
-import type L from 'leaflet'
-import { wgs84ToGcj02 } from '@trek/shared'
+import L from 'leaflet'
+import { gcj02ToWgs84, wgs84ToGcj02 } from '@trek/shared'
 import { useIsDark } from '../../hooks/useIsDark'
 import { useSettingsStore } from '../../store/settingsStore'
 import { loadAmapSdk, type AmapMap } from './amapLoader'
 
 /**
- * The backdrop's own style, and `pointer-events: none` is the load-bearing part.
+ * The backdrop's own style, and `pointer-events` is deliberately NOT `none`.
  *
- * Without it the topmost element under a finger is Amap's `<canvas class="amap-layer">`,
- * because a positioned child paints above the container it sits in. Leaflet sets
- * `touch-action: none` on ITS container so it can own gestures; the canvas carries
- * `touch-action: auto`, so on a touch device the browser applied its own default
- * instead and a pinch did nothing to the map. On a desktop the same setup worked,
- * because a wheel event bubbles up to the container either way — which is exactly
- * why this reached an iPad before it reached anyone's laptop.
- *
- * Switching the layer off for pointers also means Amap never sees an event at all,
- * so the interaction flags passed to the constructor are belt and braces rather
- * than the mechanism.
+ * It was, for one version, and the reason is worth keeping: while Leaflet owned
+ * the gestures the Amap canvas had to be transparent to pointers, or an iPad
+ * could not pinch — a positioned child paints above the container it sits in,
+ * and the canvas carries `touch-action: auto` where Leaflet's container carries
+ * `none`, so the browser handled the gesture itself and the map never heard
+ * about it. Amap drives now, so it has to receive them, and it handles touch
+ * itself. Markers are unaffected either way: they live in
+ * `.leaflet-marker-pane`, which paints above this.
  */
-export const AMAP_HOST_STYLE = 'position:absolute;inset:0;z-index:0;pointer-events:none'
+export const AMAP_HOST_STYLE = 'position:absolute;inset:0;z-index:0'
 
-/** Leaflet events that mean the camera moved. `move` fires throughout a drag, so a pan follows. */
-const SYNC_EVENTS = 'move zoom moveend zoomend resize'
+/** Amap's own zoom range. Its `zooms` option refuses anything outside this. */
+const AMAP_MIN_ZOOM = 2
+const AMAP_MAX_ZOOM = 20
 
 /**
- * Leaflet's own zoom animation, matched exactly.
+ * How close two cameras have to be to count as agreeing.
  *
- * Leaflet CSS-scales its panes over 250ms on this curve (see `zoomAnimation` in
- * leaflet.css). The ground has to move on the same curve for the same duration
- * or the markers and the map underneath them visibly disagree for a quarter of
- * a second, which is worse than not animating at all.
+ * Without a tolerance the pair can trade rounding errors indefinitely: Amap
+ * answers a centre in GCJ-02, it is converted to WGS-84 for Leaflet, Leaflet
+ * answers a value that converts back to a very slightly different GCJ-02 one,
+ * and each round trip re-enters the other's event. These are about a centimetre
+ * of latitude and a thousandth of a zoom level — under anything visible, over
+ * the conversion's own noise.
  */
-const ZOOM_EASING = 'cubic-bezier(0,0,0.25,1)'
-const ZOOM_DURATION_MS = 250
+const COORD_EPSILON = 1e-7
+const ZOOM_EPSILON = 1e-3
 
 /**
- * The Amap (高德) vector basemap, drawn underneath Leaflet.
+ * The Amap (高德) vector basemap, with Amap driving.
  *
  * Why a basemap and not a fourth map engine: everything TREK draws on a map —
- * markers, clusters, route polylines, the click handler that turns a pixel back
- * into a place, bounds fitting — is Leaflet, and on an Amap basemap it is
- * already correct, because gcj02Crs.ts puts the whole map into GCJ-02 Web
- * Mercator. Swapping the engine would mean porting all of that. Swapping only
- * what paints the ground means porting none of it.
+ * markers, clusters, route polylines, bounds fitting, the click that turns a
+ * pixel into a place — is Leaflet, and on an Amap basemap it is already
+ * correct, because gcj02Crs.ts puts the whole map into GCJ-02 Web Mercator.
+ * Swapping the engine would mean porting all of it.
  *
- * So this component owns one thing: an `AMap.Map` in a div behind Leaflet's
- * panes, kept on the same camera. Every pointer event still belongs to Leaflet
- * — the Amap instance has all of its own interaction switched off and never
- * sees one.
+ * **Why Amap owns the camera rather than following Leaflet.** The first version
+ * had it the other way round and stood in for a zoom by CSS-scaling the frame
+ * it had already drawn, the way maplibre-gl-leaflet does. That is a stretched
+ * bitmap that snaps into focus at the end, and it reads as one. amap.com does
+ * not do that — measured rather than assumed: through a wheel zoom its canvas
+ * takes zero CSS transforms, because it re-renders the vectors at fractional
+ * zoom for every frame of the gesture. The only way to get that here is to let
+ * the SDK run the gesture.
  *
- * **Why bother, when Amap already serves raster tiles TREK can use?** Because
- * those cap out at 1×. `webrd01` refuses every high-DPI parameter, and the
- * `wprd01` tiles that do come back at 512 have no labels on them at all — so on
- * a Retina screen the Chinese text in the raster basemap is always a 2×
- * upscale of a 1× render. amap.com itself does not use rasters; it renders
- * vectors with WebGL, which is why its labels are sharp. This is that.
+ * So the wheel, the pinch and the drag belong to Amap, and Leaflet's camera is
+ * pushed to match once per frame. Everything Leaflet draws rides along because
+ * its camera really did move — this is not a visual trick, and `zoomend`
+ * consumers like ReservationOverlay still see what they expect.
  *
- * A zoom is the one thing that needs real work. Leaflet animates one by
- * CSS-scaling its panes, and a canvas underneath them does not come along, so
- * the naive version leaves the ground a level behind and snaps at the end —
- * markers sliding smoothly over a map that jumps. `onZoomAnim` below scales the
- * already-drawn frame onto where the new one will land, on Leaflet's own curve
- * and duration, and swaps in the real render at the end. This is the same
- * bookkeeping maplibre-gl-leaflet does, for the same reason.
+ * The one interaction that has to travel the other way is a click on empty map:
+ * it lands on Amap's canvas now, and MapView's MapClickHandler is what turns it
+ * into "add a place here". It is forwarded below, converted out of GCJ-02 like
+ * every other coordinate that crosses this file.
  */
 export function AmapBasemap() {
   const map = useMap()
   const key = useSettingsStore(s => s.settings.amap_js_key || '')
   // useIsDark, not `settings.dark_mode`: that field is `boolean | string` and
   // carries 'auto' and 'off' as strings, both of which are truthy — reading it
-  // directly paints the dark basemap under a light app. The hook reads the
-  // `.dark` class that applyAppearance() writes, which is the one source of
-  // truth and also follows an OS-level switch under 'auto'.
+  // directly paints the dark basemap under a light app.
   const dark = useIsDark()
   const amapRef = useRef<AmapMap | null>(null)
-  const handlerRef = useRef<(() => void) | null>(null)
-  const zoomAnimRef = useRef<((e: L.ZoomAnimEvent) => void) | null>(null)
-  const zoomEndRef = useRef<(() => void) | null>(null)
+  const detachRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     if (!key) {
@@ -102,108 +96,136 @@ export function AmapBasemap() {
     container.style.background = 'transparent'
 
     /**
-     * Put the Amap camera where Leaflet's is.
+     * One guard for both directions.
      *
-     * `getCenter()` answers in WGS-84 — gcj02Crs converts on the way out — and
-     * Amap speaks GCJ-02, so the shift goes back on here. The zoom needs no
-     * conversion: both are standard Web Mercator levels over the same 256 px
-     * grid, which is exactly why this bridge is three lines rather than a
-     * projection.
+     * Each push is synchronous, so a single flag is enough: Amap moves, this is
+     * set while Leaflet's camera is driven, Leaflet's own `moveend` fires inside
+     * that call, sees the flag, and does not drive Amap back.
      */
-    // True while Leaflet is animating a zoom. The camera must NOT follow during
-    // it: the canvas is being CSS-scaled to stand in for the new zoom, and
-    // repainting it at that zoom at the same time applies the change twice.
-    let animating = false
-
-    const sync = (amap: AmapMap) => {
-      if (animating) return
-      const centre = map.getCenter()
-      const gcj = wgs84ToGcj02(centre.lat, centre.lng)
-      amap.setZoomAndCenter(map.getZoom(), [gcj.lng, gcj.lat], true)
-    }
-
-    /**
-     * Stand in for the new zoom with a CSS transform, the way Leaflet does for
-     * its own panes.
-     *
-     * The SDK cannot be asked to animate to a target on Leaflet's clock, so the
-     * frame that is already drawn is scaled to where the new one will be and
-     * swapped for the real render at the end. The anchor is the only point that
-     * has to stay put: `e.center` is at container point `p` now and will be at
-     * the container's middle `c` when the animation lands, so with the origin at
-     * 0,0 the transform is `scale(s)` followed by whatever translation carries
-     * `s·p` onto `c`.
-     */
-    const onZoomAnim = (e: L.ZoomAnimEvent) => {
-      const amap = amapRef.current
-      if (!amap) return
-      animating = true
-      const scale = map.getZoomScale(e.zoom, map.getZoom())
-      const p = map.latLngToContainerPoint(e.center)
-      const c = map.getSize().divideBy(2)
-      host.style.transformOrigin = '0 0'
-      host.style.transition = `transform ${ZOOM_DURATION_MS}ms ${ZOOM_EASING}`
-      host.style.transform = `translate(${c.x - scale * p.x}px, ${c.y - scale * p.y}px) scale(${scale})`
-    }
-
-    const onZoomEnd = () => {
-      const amap = amapRef.current
-      if (!amap) return
-      animating = false
-      // Repaint at the real zoom BEFORE dropping the transform: clearing it
-      // first shows one frame of the old, unscaled bitmap.
-      sync(amap)
-      requestAnimationFrame(() => {
-        host.style.transition = ''
-        host.style.transform = ''
-      })
-    }
+    let syncing = false
 
     loadAmapSdk(key)
       .then((AMap) => {
         if (cancelled) return
         const centre = map.getCenter()
-        const gcj = wgs84ToGcj02(centre.lat, centre.lng)
+        const start = wgs84ToGcj02(centre.lat, centre.lng)
         const amap = new AMap.Map(host, {
           viewMode: '2D',
           zoom: map.getZoom(),
-          center: [gcj.lng, gcj.lat],
-          // Belt and braces: with AMAP_HOST_STYLE this map never receives a
-          // pointer event, but two maps both reacting to one drag is the failure
-          // these prevent if that ever changes.
-          //
-          // `zoomEnable` is deliberately NOT among them, and the asymmetry is the
-          // whole reason for this comment: `dragEnable: false` only refuses user
-          // input and leaves setCenter working, but `zoomEnable: false` disables
-          // zooming as a capability, so `setZoomAndCenter` silently keeps the zoom
-          // it was built with. The ground then tracks a pan perfectly and stays a
-          // level behind on every zoom — which reads as a rendering bug, not a
-          // flag. The pointer never reaches this map anyway: it sits behind
-          // Leaflet's panes, which are what the browser hit-tests.
-          dragEnable: false,
-          doubleClickZoom: false,
-          keyboardEnable: false,
+          center: [start.lng, start.lat],
+          // The gesture is Amap's now. Rotation stays off because TREK's map has
+          // no rotated state to carry back, and the keyboard stays with Leaflet,
+          // whose navigation has focus semantics of its own.
+          dragEnable: true,
+          zoomEnable: true,
+          scrollWheel: true,
+          touchZoom: true,
+          doubleClickZoom: true,
+          jogEnable: true,
           rotateEnable: false,
-          scrollWheel: false,
-          touchZoom: false,
-          jogEnable: false,
-          animateEnable: false,
-          // Amap draws its own scale/credit; TREK has both already.
-          showLabel: true,
+          keyboardEnable: false,
           mapStyle: dark ? 'amap://styles/dark' : 'amap://styles/normal',
-          zooms: [2, 20],
+          // Clamped to what both sides can express, so neither runs past the
+          // other and leaves the ground behind at the extremes.
+          zooms: [
+            Math.max(AMAP_MIN_ZOOM, map.getMinZoom() || AMAP_MIN_ZOOM),
+            Math.min(AMAP_MAX_ZOOM, map.getMaxZoom() || AMAP_MAX_ZOOM),
+          ],
         })
         amapRef.current = amap
-        sync(amap)
-        // Kept in a ref so the cleanup can take off THIS listener. `map.off(events)`
-        // without a handler removes every listener for those events, including the
-        // ones Leaflet and the rest of MapView rely on.
-        handlerRef.current = () => sync(amap)
-        map.on(SYNC_EVENTS, handlerRef.current)
-        zoomAnimRef.current = onZoomAnim
-        zoomEndRef.current = onZoomEnd
-        map.on('zoomanim', onZoomAnim)
-        map.on('zoomend', onZoomEnd)
+
+        /** Amap's camera → Leaflet's, coalesced to one application per frame. */
+        let frame = 0
+        const pushToLeaflet = () => {
+          if (frame) return
+          frame = requestAnimationFrame(() => {
+            frame = 0
+            if (syncing) return
+            const c = amap.getCenter()
+            const wgs = gcj02ToWgs84(c.lat, c.lng)
+            const zoom = amap.getZoom()
+            const at = map.getCenter()
+            if (
+              Math.abs(at.lat - wgs.lat) < COORD_EPSILON &&
+              Math.abs(at.lng - wgs.lng) < COORD_EPSILON &&
+              Math.abs(map.getZoom() - zoom) < ZOOM_EPSILON
+            ) return
+            syncing = true
+            try {
+              // animate:false because Amap has already animated: Leaflet is being
+              // told where the ground is, not asked to decide.
+              map.setView([wgs.lat, wgs.lng], zoom, { animate: false })
+            } finally {
+              syncing = false
+            }
+          })
+        }
+
+        /** Leaflet's camera → Amap's, for the moves the app makes itself. */
+        const pushToAmap = () => {
+          if (syncing) return
+          const c = map.getCenter()
+          const gcj = wgs84ToGcj02(c.lat, c.lng)
+          const at = amap.getCenter()
+          if (
+            Math.abs(at.lat - gcj.lat) < COORD_EPSILON &&
+            Math.abs(at.lng - gcj.lng) < COORD_EPSILON &&
+            Math.abs(amap.getZoom() - map.getZoom()) < ZOOM_EPSILON
+          ) return
+          syncing = true
+          try {
+            amap.setZoomAndCenter(map.getZoom(), [gcj.lng, gcj.lat], true)
+          } finally {
+            syncing = false
+          }
+        }
+
+        /**
+         * A click on empty map, handed back to Leaflet.
+         *
+         * A click on a marker still reaches Leaflet on its own — markers paint
+         * above this canvas — so this is only the ground. `latlng` is what
+         * MapClickHandler reads; the container point and the original event come
+         * along so anything that looks at them sees the real ones.
+         */
+        const onAmapClick = (e: {
+          lnglat?: { getLat(): number; getLng(): number }
+          pixel?: { getX(): number; getY(): number }
+          originalEvent?: MouseEvent
+        }) => {
+          if (!e.lnglat) return
+          const wgs = gcj02ToWgs84(e.lnglat.getLat(), e.lnglat.getLng())
+          const latlng = L.latLng(wgs.lat, wgs.lng)
+          const containerPoint = e.pixel
+            ? L.point(e.pixel.getX(), e.pixel.getY())
+            : map.latLngToContainerPoint(latlng)
+          map.fire('click', {
+            latlng,
+            containerPoint,
+            layerPoint: map.containerPointToLayerPoint(containerPoint),
+            originalEvent: e.originalEvent ?? new MouseEvent('click'),
+          })
+        }
+
+        amap.on('mapmove', pushToLeaflet)
+        amap.on('zoomchange', pushToLeaflet)
+        amap.on('moveend', pushToLeaflet)
+        amap.on('zoomend', pushToLeaflet)
+        amap.on('click', onAmapClick)
+        // Only the app's own camera moves need carrying the other way: a move
+        // that came from Amap is already reflected, and `syncing` filters it.
+        map.on('moveend zoomend resize', pushToAmap)
+        pushToAmap()
+
+        detachRef.current = () => {
+          if (frame) cancelAnimationFrame(frame)
+          amap.off('mapmove', pushToLeaflet)
+          amap.off('zoomchange', pushToLeaflet)
+          amap.off('moveend', pushToLeaflet)
+          amap.off('zoomend', pushToLeaflet)
+          amap.off('click', onAmapClick)
+          map.off('moveend zoomend resize', pushToAmap)
+        }
       })
       .catch((err) => {
         console.warn('[basemap] the Amap vector basemap did not load', err)
@@ -211,12 +233,8 @@ export function AmapBasemap() {
 
     return () => {
       cancelled = true
-      if (handlerRef.current) map.off(SYNC_EVENTS, handlerRef.current)
-      if (zoomAnimRef.current) map.off('zoomanim', zoomAnimRef.current)
-      if (zoomEndRef.current) map.off('zoomend', zoomEndRef.current)
-      handlerRef.current = null
-      zoomAnimRef.current = null
-      zoomEndRef.current = null
+      detachRef.current?.()
+      detachRef.current = null
       try {
         amapRef.current?.destroy()
       } catch {
