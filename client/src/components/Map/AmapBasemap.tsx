@@ -21,13 +21,17 @@ import { loadAmapSdk, type AmapMap } from './amapLoader'
 export const AMAP_HOST_STYLE = 'position:absolute;inset:0;z-index:0'
 
 /**
- * The class that pins `touch-action: none` onto everything the SDK creates in
- * here (see index.css).
+ * The class that pins `touch-action: none` onto everything the SDK creates
+ * beneath it (see index.css).
  *
  * It cannot be an inline style: the elements that receive the touch are Amap's
- * own canvas and wrappers, built after this div is handed over. Safari reads
+ * own canvas and wrappers, built after the div is handed over, and Safari reads
  * the touch-action of the hit element rather than intersecting it with its
- * ancestors, so a value on this div alone never reaches them.
+ * ancestors.
+ *
+ * It also cannot live on the div Amap is given: the SDK overwrites that div's
+ * className with `amap-container` when it takes it over, which silently unhooks
+ * the rule. So this sits on a wrapper and Amap gets a child of it.
  */
 export const AMAP_HOST_CLASS = 'trek-amap-host'
 
@@ -102,6 +106,11 @@ export function AmapBasemap() {
     const host = document.createElement('div')
     host.className = AMAP_HOST_CLASS
     host.style.cssText = AMAP_HOST_STYLE
+    // The SDK renames whatever element it is handed, so it gets a child and the
+    // class that carries the touch-action rule stays on the wrapper.
+    const mount = document.createElement('div')
+    mount.style.cssText = 'position:absolute;inset:0'
+    host.appendChild(mount)
     container.insertBefore(host, container.firstChild)
 
     // Leaflet paints its own background over whatever is behind it.
@@ -122,7 +131,7 @@ export function AmapBasemap() {
         if (cancelled) return
         const centre = map.getCenter()
         const start = wgs84ToGcj02(centre.lat, centre.lng)
-        const amap = new AMap.Map(host, {
+        const amap = new AMap.Map(mount, {
           viewMode: '2D',
           zoom: map.getZoom(),
           center: [start.lng, start.lat],
