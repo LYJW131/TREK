@@ -322,6 +322,10 @@ export default defineConfig(({ mode }) => ({
       ignored: ['!**/shared/dist/**'],
     },
     proxy: {
+      '/_AMapService': {
+        target: API_TARGET,
+        changeOrigin: true,
+      },
       '/api': {
         target: API_TARGET,
         changeOrigin: true,

@@ -309,19 +309,19 @@ html.dark .bg-slate-50\/60, html.dark [class*="bg-slate-50/"] { background-color
 
 /* ── Press-Feedback + bessere Easings (Emil Kowalski) ─────────── */
 /* Buttons sollen antworten wenn sie gedrückt werden.
-   Map-Marker sind ausgenommen: MapLibre und Mapbox geben ihrem Marker-Element
+   Map-Marker sind ausgenommen: Leaflet, MapLibre und Mapbox geben ihrem Marker-Element
    role="button" und schreiben dessen `transform` bei jedem Frame einer Bewegung
    neu. Mit einem Übergang darauf hinkt die Nadel dem Kartenzug hinterher und
    springt am Ende an ihren Ort zurück, und ein Klick würde den scale(0.97) über
    die Positionierung der Bibliothek legen. */
 button:not(:disabled):not([data-no-press]),
-[role="button"]:not([aria-disabled="true"]):not([data-no-press]):not(.maplibregl-marker):not(.mapboxgl-marker) {
+[role="button"]:not([aria-disabled="true"]):not([data-no-press]):not(.maplibregl-marker):not(.mapboxgl-marker):not(.leaflet-marker-icon) {
   transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter !important;
   transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 button:not(:disabled):not([data-no-press]):active,
-[role="button"]:not([aria-disabled="true"]):not([data-no-press]):not(.maplibregl-marker):not(.mapboxgl-marker):active {
+[role="button"]:not([aria-disabled="true"]):not([data-no-press]):not(.maplibregl-marker):not(.mapboxgl-marker):not(.leaflet-marker-icon):active {
   transform: scale(0.97);
   transition-duration: 80ms;
 }
@@ -1127,6 +1127,11 @@ body {
 }
 .leaflet-top, .leaflet-bottom {
   z-index: 1 !important;
+}
+
+.leaflet-container.trek-amap-active .leaflet-marker-icon,
+.leaflet-container.trek-amap-active .leaflet-marker-shadow {
+  transition: none !important;
 }
 
 /* ── Amap vector basemap: the touch gesture is the SDK's ──────────────

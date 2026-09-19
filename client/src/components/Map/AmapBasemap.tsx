@@ -5,6 +5,7 @@ import { gcj02ToWgs84, wgs84ToGcj02 } from '@trek/shared'
 import { useIsDark } from '../../hooks/useIsDark'
 import { useSettingsStore } from '../../store/settingsStore'
 import { loadAmapSdk, type AmapMap } from './amapLoader'
+import { attachAmapCamera } from './amapCameraBridge'
 
 /**
  * The backdrop's own style, and `pointer-events` is deliberately NOT `none`.
@@ -38,19 +39,6 @@ export const AMAP_HOST_CLASS = 'trek-amap-host'
 /** Amap's own zoom range. Its `zooms` option refuses anything outside this. */
 const AMAP_MIN_ZOOM = 2
 const AMAP_MAX_ZOOM = 20
-
-/**
- * How close two cameras have to be to count as agreeing.
- *
- * Without a tolerance the pair can trade rounding errors indefinitely: Amap
- * answers a centre in GCJ-02, it is converted to WGS-84 for Leaflet, Leaflet
- * answers a value that converts back to a very slightly different GCJ-02 one,
- * and each round trip re-enters the other's event. These are about a centimetre
- * of latitude and a thousandth of a zoom level — under anything visible, over
- * the conversion's own noise.
- */
-const COORD_EPSILON = 1e-7
-const ZOOM_EPSILON = 1e-3
 
 /**
  * How far a finger may travel and still count as a press rather than a drag.
@@ -128,15 +116,6 @@ export function AmapBasemap() {
     const previousBackground = container.style.background
     container.style.background = 'transparent'
 
-    /**
-     * One guard for both directions.
-     *
-     * Each push is synchronous, so a single flag is enough: Amap moves, this is
-     * set while Leaflet's camera is driven, Leaflet's own `moveend` fires inside
-     * that call, sees the flag, and does not drive Amap back.
-     */
-    let syncing = false
-
     loadAmapSdk(key)
       .then((AMap) => {
         if (cancelled) return
@@ -153,6 +132,7 @@ export function AmapBasemap() {
           zoomEnable: true,
           scrollWheel: true,
           touchZoom: true,
+          touchZoomCenter: 0,
           doubleClickZoom: true,
           jogEnable: true,
           rotateEnable: false,
@@ -167,75 +147,7 @@ export function AmapBasemap() {
         })
         amapRef.current = amap
 
-        /** Amap's camera → Leaflet's, once. */
-        const pushToLeaflet = () => {
-          if (syncing) return
-          const c = amap.getCenter()
-          const wgs = gcj02ToWgs84(c.lat, c.lng)
-          const zoom = amap.getZoom()
-          const at = map.getCenter()
-          if (
-            Math.abs(at.lat - wgs.lat) < COORD_EPSILON &&
-            Math.abs(at.lng - wgs.lng) < COORD_EPSILON &&
-            Math.abs(map.getZoom() - zoom) < ZOOM_EPSILON
-          ) return
-          syncing = true
-          try {
-            // animate:false because Amap has already animated: Leaflet is being
-            // told where the ground is, not asked to decide.
-            map.setView([wgs.lat, wgs.lng], zoom, { animate: false })
-          } finally {
-            syncing = false
-          }
-        }
-
-        /**
-         * Follow the camera every frame for as long as a gesture is running.
-         *
-         * Driving this off Amap's own events is what made the markers stutter:
-         * the ground redraws every frame, but `zoomchange` and `mapmove` arrive
-         * a handful of times per gesture, so everything Leaflet draws jumped
-         * between four or five positions while the map under it moved smoothly.
-         * Reading the camera on a rAF loop instead costs one getCenter/getZoom
-         * per frame and puts the two layers on the same clock.
-         *
-         * The loop only runs between a gesture's start and its end, so an idle
-         * map schedules nothing.
-         */
-        let frame = 0
-        const followFrame = () => {
-          pushToLeaflet()
-          frame = requestAnimationFrame(followFrame)
-        }
-        const startFollowing = () => {
-          if (!frame) frame = requestAnimationFrame(followFrame)
-        }
-        const stopFollowing = () => {
-          if (frame) cancelAnimationFrame(frame)
-          frame = 0
-          // One last read: the final frame of Amap's own easing lands after its
-          // end event, and without this the two cameras settle a pixel apart.
-          pushToLeaflet()
-        }
-
-        /** Leaflet's camera → Amap's, for the moves the app makes itself. */
-        const pushToAmap = () => {
-          if (syncing) return
-          const c = map.getCenter()
-          const gcj = wgs84ToGcj02(c.lat, c.lng)
-          const at = amap.getCenter()
-          if (
-            Math.abs(at.lat - gcj.lat) < COORD_EPSILON &&
-            Math.abs(at.lng - gcj.lng) < COORD_EPSILON &&
-            Math.abs(amap.getZoom() - map.getZoom()) < ZOOM_EPSILON
-          ) return
-          syncing = true
-          try {
-            amap.setZoomAndCenter(map.getZoom(), [gcj.lng, gcj.lat], true)
-          } finally {
-            syncing = false
-          }
-        }
+        const detachCamera = attachAmapCamera(map, amap)
 
         /**
          * A press on empty map, handed back to Leaflet.
@@ -302,39 +214,16 @@ export function AmapBasemap() {
         host.addEventListener('pointerup', onPointerUp, true)
         host.addEventListener('pointercancel', onPointerUp, true)
 
-        amap.on('movestart', startFollowing)
-        amap.on('dragstart', startFollowing)
-        amap.on('zoomstart', startFollowing)
-        amap.on('mapmove', startFollowing)
-        amap.on('zoomchange', startFollowing)
-        amap.on('moveend', stopFollowing)
-        amap.on('dragend', stopFollowing)
-        amap.on('zoomend', stopFollowing)
         amap.on('click', onAmapClick)
         amap.on('rightclick', onAmapRightClick)
-        // Only the app's own camera moves need carrying the other way: a move
-        // that came from Amap is already reflected, and `syncing` filters it.
-        map.on('moveend zoomend resize', pushToAmap)
-        pushToAmap()
-
         detachRef.current = () => {
-          if (frame) cancelAnimationFrame(frame)
-          frame = 0
-          amap.off('movestart', startFollowing)
-          amap.off('dragstart', startFollowing)
-          amap.off('zoomstart', startFollowing)
-          amap.off('mapmove', startFollowing)
-          amap.off('zoomchange', startFollowing)
-          amap.off('moveend', stopFollowing)
-          amap.off('dragend', stopFollowing)
-          amap.off('zoomend', stopFollowing)
+          detachCamera()
           amap.off('click', onAmapClick)
           amap.off('rightclick', onAmapRightClick)
           host.removeEventListener('pointerdown', onPointerDown, true)
           host.removeEventListener('pointermove', onPointerMove, true)
           host.removeEventListener('pointerup', onPointerUp, true)
           host.removeEventListener('pointercancel', onPointerUp, true)
-          map.off('moveend zoomend resize', pushToAmap)
         }
       })
       .catch((err) => {

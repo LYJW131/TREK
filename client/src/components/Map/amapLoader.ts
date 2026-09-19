@@ -29,7 +29,7 @@ export interface AmapGlobal {
 export interface AmapMap {
   setZoomAndCenter(zoom: number, center: [number, number], immediately?: boolean): void;
   setMapStyle(style: string): void;
-  getZoom(): number;
+  getZoom(digits?: number): number;
   getCenter(): { lng: number; lat: number };
   getSize?(): { width: number; height: number };
   destroy(): void;
