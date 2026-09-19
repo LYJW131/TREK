@@ -44,6 +44,8 @@ type Defaults = RoutingDefaults & {
   blur_booking_codes?: boolean
   map_tile_url?: string
   carto_api_key?: string
+  amap_js_key?: string
+  amap_js_security_code?: string
   map_provider?: string
   mapbox_access_token?: string
   mapbox_style?: string
@@ -117,6 +119,8 @@ export default function DefaultUserSettingsTab(): React.ReactElement {
   const [defaults, setDefaults] = useState<Defaults>({})
   const [loaded, setLoaded] = useState(false)
   const [mapTileUrl, setMapTileUrl] = useState('')
+  const [amapJsKey, setAmapJsKey] = useState('')
+  const [amapJsSecurity, setAmapJsSecurity] = useState('')
   const managed = useAuthStore((s) => s.managed)
   const [mapboxToken, setMapboxToken] = useState('')
   const [cartoKey, setCartoKey] = useState('')
@@ -129,6 +133,8 @@ export default function DefaultUserSettingsTab(): React.ReactElement {
       setMapTileUrl(normalizeTileUrl(data.map_tile_url || ''))
       setMapboxToken(data.mapbox_access_token || '')
       setCartoKey(data.carto_api_key || '')
+      setAmapJsKey(data.amap_js_key || '')
+      setAmapJsSecurity(data.amap_js_security_code || '')
       setMapboxStyle(provider === 'leaflet' ? (data.mapbox_style || '') : styleForProvider(provider, provider === 'maplibre-gl' ? data.maplibre_style : data.mapbox_style))
       setLoaded(true)
     }).catch(() => setLoaded(true))
@@ -151,6 +157,8 @@ export default function DefaultUserSettingsTab(): React.ReactElement {
       if (key === 'map_tile_url') setMapTileUrl('')
       if (key === 'mapbox_access_token') setMapboxToken('')
       if (key === 'carto_api_key') setCartoKey('')
+      if (key === 'amap_js_key') setAmapJsKey('')
+      if (key === 'amap_js_security_code') setAmapJsSecurity('')
       if (key === 'mapbox_style' || key === 'maplibre_style') {
         const provider = normalizeProvider(defaults.map_provider)
         setMapboxStyle(provider === 'leaflet' ? '' : defaultStyleForProvider(provider))
@@ -380,6 +388,42 @@ export default function DefaultUserSettingsTab(): React.ReactElement {
           <p className="text-xs mt-1 text-content-faint">{t('admin.defaultSettings.cartoKeyHint')}</p>
         </div>
         )}
+        {/* The two Amap JS credentials, set once for the whole instance. Only the
+            first is ever served to a browser; the second is masked on read and
+            leaves only through the /_AMapService proxy. Both here rather than
+            one here and one in a compose file — a feature configured in two
+            places is a feature half-configured. */}
+        <div style={{ marginTop: 14 }}>
+          <label className="block text-sm font-medium mb-1.5 text-content-secondary">
+            {t('settings.mapAmapJsKey')}
+            <ResetButton field="amap_js_key" />
+          </label>
+          <input
+            type="text"
+            value={amapJsKey}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmapJsKey(e.target.value)}
+            onBlur={() => save({ amap_js_key: amapJsKey })}
+            spellCheck={false}
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+          />
+        </div>
+        <div style={{ marginTop: 14 }}>
+          <label className="block text-sm font-medium mb-1.5 text-content-secondary">
+            {t('settings.mapAmapJsSecurity')}
+            <ResetButton field="amap_js_security_code" />
+          </label>
+          <input
+            type="text"
+            value={amapJsSecurity}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmapJsSecurity(e.target.value)}
+            onBlur={() => save({ amap_js_security_code: amapJsSecurity })}
+            spellCheck={false}
+            autoComplete="off"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+          />
+          <p className="text-xs mt-1 text-content-faint">{t('settings.mapAmapJsSecurityHint')}</p>
+        </div>
         {!managed && (
           <div className="mt-3.5">
             <RoutingInstanceFields defaults={defaults} onSave={save} onReset={reset} />
