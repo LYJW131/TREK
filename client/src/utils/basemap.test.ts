@@ -114,4 +114,18 @@ describe('the Amap backdrop and the pointer', () => {
     expect(AMAP_HOST_STYLE).toContain('position:absolute')
     expect(AMAP_HOST_STYLE).toContain('z-index:0')
   })
+
+  it('FE-UTIL-BASEMAP-015: the host carries the class that pins touch-action on the SDK\'s own elements', async () => {
+    const { AMAP_HOST_CLASS } = await import('../components/Map/AmapBasemap')
+    // The element a finger hits is Amap's canvas, built after the div is handed
+    // over, and Safari reads the hit element's own touch-action rather than
+    // intersecting it with its ancestors. So this cannot be an inline style,
+    // and index.css matches on exactly this class name — if one of the two
+    // moves without the other, an iPad silently loses the pinch again.
+    expect(AMAP_HOST_CLASS).toBe('trek-amap-host')
+    const [{ readFileSync }, { join }] = await Promise.all([import('node:fs'), import('node:path')])
+    const css = readFileSync(join(process.cwd(), 'src', 'index.css'), 'utf8')
+    expect(css).toContain(`.${AMAP_HOST_CLASS} *`)
+    expect(css).toContain('touch-action: none')
+  })
 })

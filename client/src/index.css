@@ -1129,6 +1129,22 @@ body {
   z-index: 1 !important;
 }
 
+/* ── Amap vector basemap: the touch gesture is the SDK's ──────────────
+   The Amap canvas is what a finger actually hits — it is a positioned child of
+   the Leaflet container, so it paints above it — and the SDK leaves it at
+   `touch-action: auto`. Safari reads the touch-action of the hit element
+   itself, not the intersection with its ancestors, so the container's own
+   `none` does not reach it and iPadOS took the pinch as a page zoom: the map
+   sat still while the page scaled. Every element the SDK creates in here is
+   pinned to `none` for that reason; `none` is what "the page handles this
+   gesture" means, which is exactly what the SDK wants.
+   Reported twice from an iPad, once under each side of the ownership change —
+   keep this rule with whichever side owns the gesture. */
+.trek-amap-host,
+.trek-amap-host * {
+  touch-action: none;
+}
+
 /* ── iOS-style map tooltip ─────────────────────── */
 .leaflet-tooltip.map-tooltip {
   background: var(--tooltip-bg);

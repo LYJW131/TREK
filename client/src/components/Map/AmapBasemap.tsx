@@ -20,6 +20,17 @@ import { loadAmapSdk, type AmapMap } from './amapLoader'
  */
 export const AMAP_HOST_STYLE = 'position:absolute;inset:0;z-index:0'
 
+/**
+ * The class that pins `touch-action: none` onto everything the SDK creates in
+ * here (see index.css).
+ *
+ * It cannot be an inline style: the elements that receive the touch are Amap's
+ * own canvas and wrappers, built after this div is handed over. Safari reads
+ * the touch-action of the hit element rather than intersecting it with its
+ * ancestors, so a value on this div alone never reaches them.
+ */
+export const AMAP_HOST_CLASS = 'trek-amap-host'
+
 /** Amap's own zoom range. Its `zooms` option refuses anything outside this. */
 const AMAP_MIN_ZOOM = 2
 const AMAP_MAX_ZOOM = 20
@@ -89,6 +100,7 @@ export function AmapBasemap() {
     // map and needs no layout of its own. Leaflet's panes start at z-index 200,
     // so anything drawn on the map stays on top without a stacking rule here.
     const host = document.createElement('div')
+    host.className = AMAP_HOST_CLASS
     host.style.cssText = AMAP_HOST_STYLE
     container.insertBefore(host, container.firstChild)
 
