@@ -79,6 +79,23 @@ export const AMAP_SATELLITE = 'https://webst01.is.autonavi.com/appmaptile?style=
 export const AMAP_ATTRIBUTION = '&copy; <a href="https://amap.com">高德地图</a>'
 
 /**
+ * Amap's own vector basemap, drawn by its JS API rather than fetched as tiles.
+ *
+ * A sentinel rather than a URL, for the same reason `mapbox://` is one: there is
+ * no template to fetch. The SDK is handed a key and paints a WebGL canvas, which
+ * is what makes its Chinese labels sharp on a high-DPI screen — the raster
+ * presets above cannot be, because Amap publishes no 2x labelled tile at all.
+ *
+ * Needs a 「Web端(JS API)」key, which is a different key from the 「Web 服务」one
+ * the place search and the transit backend use.
+ */
+export const AMAP_GL = 'amap://vector'
+
+export function isAmapGlStyle(url: string | null | undefined): boolean {
+  return (url || '').trim().toLowerCase() === AMAP_GL
+}
+
+/**
  * Attribution for whatever basemap a map ended up with. OpenFreeMap asks for a
  * credit of its own, and printing OpenStreetMap alone under its tiles is both
  * wrong and a licence problem, so the URL decides rather than a flag at the
@@ -88,7 +105,7 @@ export function attributionForTile(url: string | null | undefined): string {
   if (!url) return OSM_ATTRIBUTION
   if (url.includes('openfreemap.org')) return OFM_ATTRIBUTION
   if (url.includes('arcgisonline.com')) return SATELLITE_TILE_ATTRIBUTION
-  if (url.includes('autonavi.com')) return AMAP_ATTRIBUTION
+  if (url.includes('autonavi.com') || isAmapGlStyle(url)) return AMAP_ATTRIBUTION
   return OSM_ATTRIBUTION
 }
 

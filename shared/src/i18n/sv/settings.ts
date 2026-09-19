@@ -44,6 +44,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Åtkomsttoken',
   'settings.mapCartoKey': 'CARTO API-nyckel',
   'settings.mapCartoKeyHint': 'CARTO-bakgrundskartor visar en vattenstämpel utan nyckel. Gratis och utan konto, från',
+  'settings.mapAmapJsKey': 'Amap JS API-nyckel',
+  'settings.mapAmapJsKeyHint':
+    'För Amaps vektorbakgrundskarta. En annan nyckel än «Web 服务» — skapa den som typen «Web端(JS API)» på',
+  'settings.mapAmapJsSecurity': 'Amap-säkerhetskod',
+  'settings.mapAmapJsSecurityHint':
+    'Utfärdas tillsammans med JS API-nyckeln sedan 2021. Utan den avvisas varje förfrågan kartan gör och bakgrundskartan förblir tom.',
   'settings.mapCartoKeyLink': 'API-nyckel för bakgrundskartor på carto.com',
   'settings.mapCartoKeyMissing':
     'Den här mallen är en CARTO-bakgrundskarta. Utan nyckel stämplar CARTO "API KEY REQUIRED" på varje ruta. Tills en nyckel anges visar TREK standardbakgrundskartan.',

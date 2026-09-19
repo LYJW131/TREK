@@ -42,6 +42,12 @@ const settings: TranslationStrings = {
   'settings.mapCartoKey': "Clé d'API CARTO",
   'settings.mapCartoKeyHint':
     'Les fonds de carte CARTO affichent un filigrane sans clé. Gratuite et sans compte, depuis',
+  'settings.mapAmapJsKey': 'Clé JS API Amap',
+  'settings.mapAmapJsKeyHint':
+    'Pour le fond de carte vectoriel Amap. Une clé distincte de celle « Web 服务 » — créez-la en type « Web端(JS API) » sur',
+  'settings.mapAmapJsSecurity': 'Code de sécurité Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Fourni avec la clé JS API depuis 2021. Sans lui, chaque requête de la carte est refusée et le fond reste vide.',
   'settings.mapCartoKeyLink': "clé d'API de fonds de carte carto.com",
   'settings.mapCartoKeyMissing':
     'Ce modèle est un fond de carte CARTO. Sans clé, CARTO appose "API KEY REQUIRED" sur chaque tuile. Tant que la clé manque, TREK affiche le fond de carte par défaut.',

@@ -14,6 +14,11 @@ export const ENCRYPTED_SETTING_KEYS = new Set([
   'ntfy_token',
   'mapbox_access_token',
   'carto_api_key',
+  // Amap's JS API key and its 安全密钥. Encrypted at rest and returned in the
+  // clear, exactly like carto_api_key: the browser has to read both to load the
+  // SDK at all, so masking them would only break the map.
+  'amap_js_key',
+  'amap_js_security_code',
   'llm_api_key',
 ]);
 // Encrypted keys that are masked (••••••••) when returned to the client.
@@ -58,6 +63,11 @@ export const DEFAULTABLE_USER_SETTING_KEYS = [
   // the key is per-instance rather than per-person: defaultable so one admin
   // value clears the watermark for everybody at once.
   'carto_api_key',
+  // The Amap JS API credentials are a property of the deployment rather than a
+  // taste — one admin value gives every member in China the vector basemap —
+  // so they are defaultable the same way the CARTO key is.
+  'amap_js_key',
+  'amap_js_security_code',
   // Instance-wide GL map defaults: admins can set Mapbox token/style or
   // tokenless MapLibre/OpenFreeMap style defaults for new users (#920).
   'map_provider',

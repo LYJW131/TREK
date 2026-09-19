@@ -42,6 +42,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Mã thông báo truy cập',
   'settings.mapCartoKey': 'Khóa API CARTO',
   'settings.mapCartoKeyHint': 'Bản đồ nền CARTO hiển thị hình mờ nếu không có khóa. Miễn phí, không cần tài khoản, từ',
+  'settings.mapAmapJsKey': 'Khóa JS API của Amap',
+  'settings.mapAmapJsKeyHint':
+    'Dùng cho bản đồ nền vector của Amap. Đây là khóa khác với khóa «Web 服务» — hãy tạo theo loại «Web端(JS API)» tại',
+  'settings.mapAmapJsSecurity': 'Mã bảo mật Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Được cấp kèm khóa JS API từ năm 2021. Thiếu mã này thì mọi yêu cầu của bản đồ đều bị từ chối và bản đồ nền sẽ trống.',
   'settings.mapCartoKeyLink': 'khóa API bản đồ nền carto.com',
   'settings.mapCartoKeyMissing':
     'Mẫu này là bản đồ nền CARTO. Không có khóa, CARTO in "API KEY REQUIRED" lên mọi ô bản đồ. Cho đến khi bạn nhập khóa, TREK hiển thị bản đồ nền mặc định.',

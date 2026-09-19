@@ -31,6 +31,12 @@ const settings: TranslationStrings = {
   'settings.mapCartoKey': "Clau d'API de CARTO",
   'settings.mapCartoKeyHint':
     "Els mapes base de CARTO mostren una marca d'aigua sense clau. Gratuïta i sense compte, des de",
+  'settings.mapAmapJsKey': 'Clau de JS API d’Amap',
+  'settings.mapAmapJsKeyHint':
+    'Per al mapa base vectorial d’Amap. És diferent de la clau «Web 服务»: crea-la del tipus «Web端(JS API)» a',
+  'settings.mapAmapJsSecurity': 'Codi de seguretat d’Amap',
+  'settings.mapAmapJsSecurityHint':
+    'S’emet juntament amb la clau de JS API des del 2021. Sense ell, totes les peticions del mapa es rebutgen i el mapa base queda en blanc.',
   'settings.mapCartoKeyLink': "clau d'API de mapes base de carto.com",
   'settings.mapCartoKeyMissing':
     'Aquesta plantilla és un mapa base de CARTO. Sense clau, CARTO estampa "API KEY REQUIRED" a cada tessel·la. Mentre no hi hagi clau, TREK mostra el mapa base per defecte.',

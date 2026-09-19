@@ -61,6 +61,7 @@ import { OFM_POSITRON, DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, MAP_MAX_ZOOM, SATEL
 import { crsForBasemap } from './gcj02Crs'
 import { isGcj02Basemap, resolveBasemap } from '../../utils/tileUrl'
 import VectorBasemap from './VectorBasemap'
+import AmapBasemap from './AmapBasemap'
 import { useSettingsStore } from '../../store/settingsStore'
 import { MapLayerSwitcher, MAP_LAYER_SWITCHER_INSET } from './MapLayerSwitcher'
 import { computeMapViewport, TILE_SIZE_RASTER, type ViewportPadding } from '../../utils/mapViewport'
@@ -1065,6 +1066,8 @@ export const MapView = memo(function MapView({
         />
       ) : basemap.kind === 'vector' ? (
         <VectorBasemap style={basemap.style} />
+      ) : basemap.kind === 'amap-gl' ? (
+        <AmapBasemap />
       ) : (
         <TileLayer
           key="raster"

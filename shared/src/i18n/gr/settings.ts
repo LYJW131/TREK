@@ -44,6 +44,12 @@ const settings: TranslationStrings = {
   'settings.mapCartoKey': 'Κλειδί API CARTO',
   'settings.mapCartoKeyHint':
     'Οι βασικοί χάρτες CARTO εμφανίζουν υδατογράφημα χωρίς κλειδί. Δωρεάν, χωρίς λογαριασμό, από',
+  'settings.mapAmapJsKey': 'Κλειδί JS API του Amap',
+  'settings.mapAmapJsKeyHint':
+    'Για τον διανυσματικό χάρτη βάσης του Amap. Διαφορετικό κλειδί από το «Web 服务» — δημιουργήστε το ως «Web端(JS API)» στο',
+  'settings.mapAmapJsSecurity': 'Κωδικός ασφαλείας Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Εκδίδεται μαζί με το κλειδί JS API από το 2021. Χωρίς αυτόν κάθε αίτημα του χάρτη απορρίπτεται και ο χάρτης βάσης μένει κενός.',
   'settings.mapCartoKeyLink': 'κλειδί API βασικών χαρτών carto.com',
   'settings.mapCartoKeyMissing':
     'Αυτό το πρότυπο είναι βασικός χάρτης CARTO. Χωρίς κλειδί, η CARTO τυπώνει "API KEY REQUIRED" σε κάθε πλακίδιο. Μέχρι να εισαγάγετε κλειδί, το TREK εμφανίζει τον προεπιλεγμένο βασικό χάρτη.',

@@ -1,3 +1,5 @@
+import { isAmapGlStyle } from '../constants/mapDefaults'
+
 /**
  * OpenStreetMap has not needed the a/b/c.tile.openstreetmap.org subdomains
  * since 2022 — tile.openstreetmap.org serves the whole grid on its own — and
@@ -86,12 +88,17 @@ export function resolveTileUrl(template: string | null | undefined, fallback: st
 export type Basemap =
   | { kind: 'raster'; url: string }
   | { kind: 'vector'; style: string }
+  // Amap's own SDK paints this one; there is nothing for TREK to fetch, so it
+  // carries no URL. See components/Map/AmapBasemap.tsx.
+  | { kind: 'amap-gl' }
 
 /** A MapLibre style document rather than a `{z}/{x}/{y}` tile template. */
 export function isVectorStyle(url: string | null | undefined): boolean {
   if (!url) return false
   const u = url.trim()
   if (!u) return false
+  // `amap://vector` is a basemap of its own kind, not a MapLibre style document.
+  if (isAmapGlStyle(u)) return false
   // A tile template always carries its placeholders; a style URL never does.
   if (/\{[zxy]\}/i.test(u)) return false
   return /^https?:\/\//i.test(u) || u.startsWith('mapbox://')
@@ -113,6 +120,10 @@ const GCJ02_TILE_HOST = /(^|\.)is\.autonavi\.com$/i
 
 export function isGcj02Basemap(url: string | null | undefined): boolean {
   if (!url) return false
+  // The vector basemap is the same datum by another route: Amap's SDK draws in
+  // GCJ-02 too, so a map on it needs the shifted CRS just as much as one on the
+  // raster tiles — and it has no host to match on.
+  if (isAmapGlStyle(url)) return true
   return GCJ02_TILE_HOST.test(templateHost(url))
 }
 
@@ -129,6 +140,7 @@ export function resolveBasemap(
   cartoKey?: string | null,
 ): Basemap {
   const chosen = resolveTileUrl(template, fallback, cartoKey)
+  if (isAmapGlStyle(chosen)) return { kind: 'amap-gl' }
   if (isVectorStyle(chosen)) return { kind: 'vector', style: chosen }
   return { kind: 'raster', url: chosen }
 }

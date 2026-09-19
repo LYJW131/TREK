@@ -25,7 +25,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import { CLUSTER_OPTIONS, createClusterIcon } from '../components/Map/markerCluster';
 import { getCategoryIcon } from '../components/shared/categoryIcons';
 import PublicLanguagePicker from '../components/shared/PublicLanguagePicker';
-import { OFM_POSITRON, DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, MAP_MAX_ZOOM, attributionForTile } from '../constants/mapDefaults';
+import { AMAP_ROAD, OFM_POSITRON, DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, MAP_MAX_ZOOM, attributionForTile } from '../constants/mapDefaults';
 import VectorBasemap from '../components/Map/VectorBasemap';
 import { useTranslation } from '../i18n';
 import { avatarSrc } from '../utils/avatarSrc';
@@ -444,9 +444,12 @@ export default function SharedTripPage() {
                 {basemap.kind === 'vector' ? (
                   <VectorBasemap style={basemap.style} />
                 ) : (
+                  /* A share link has no signed-in user, so there is no JS API key to
+                     hand the Amap SDK — an owner on the vector basemap gets the raster
+                     Amap tiles here instead, which need no key and are the same map. */
                   <TileLayer
-                    url={basemap.url}
-                    attribution={attributionForTile(basemap.url)}
+                    url={basemap.kind === 'amap-gl' ? AMAP_ROAD : basemap.url}
+                    attribution={attributionForTile(basemap.kind === 'amap-gl' ? AMAP_ROAD : basemap.url)}
                     referrerPolicy="strict-origin-when-cross-origin"
                   />
                 )}

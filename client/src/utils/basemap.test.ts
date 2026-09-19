@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { isVectorStyle, resolveBasemap, resolveTileUrl } from './tileUrl'
-import { OFM_POSITRON, attributionForTile, OFM_ATTRIBUTION } from '../constants/mapDefaults'
+import { isGcj02Basemap, isVectorStyle, resolveBasemap, resolveTileUrl } from './tileUrl'
+import { AMAP_GL, AMAP_ROAD, AMAP_ATTRIBUTION, OFM_POSITRON, attributionForTile, OFM_ATTRIBUTION } from '../constants/mapDefaults'
 
 const CARTO = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 const CUSTOM = 'https://tiles.example.test/{z}/{x}/{y}.png'
@@ -56,6 +56,27 @@ describe('resolveBasemap', () => {
 
   it('FE-UTIL-BASEMAP-008: with a key it stays raster CARTO', () => {
     expect(resolveBasemap(CARTO, OFM_POSITRON, 'k1')).toEqual({ kind: 'raster', url: `${CARTO}?key=k1` })
+  })
+})
+
+describe('the Amap vector basemap', () => {
+  it('FE-UTIL-BASEMAP-010: `amap://vector` is a kind of its own, not a MapLibre style', () => {
+    // It looks like a style URL — no {z}/{x}/{y} — and would otherwise be handed
+    // to MapLibre, which cannot fetch it and would draw nothing.
+    expect(isVectorStyle(AMAP_GL)).toBe(false)
+    expect(resolveBasemap(AMAP_GL, OFM_POSITRON)).toEqual({ kind: 'amap-gl' })
+  })
+
+  it('FE-UTIL-BASEMAP-011: it is GCJ-02, so the map still takes the shifted CRS', () => {
+    // The raster presets are recognised by their host; this one has none, and
+    // without the CRS every marker would land a few hundred metres off.
+    expect(isGcj02Basemap(AMAP_ROAD)).toBe(true)
+    expect(isGcj02Basemap(AMAP_GL)).toBe(true)
+    expect(isGcj02Basemap(OFM_POSITRON)).toBe(false)
+  })
+
+  it('FE-UTIL-BASEMAP-012: and it is credited to Amap like the tiles are', () => {
+    expect(attributionForTile(AMAP_GL)).toBe(AMAP_ATTRIBUTION)
   })
 })
 

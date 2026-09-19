@@ -40,6 +40,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com ← رموز الوصول',
   'settings.mapCartoKey': 'مفتاح CARTO API',
   'settings.mapCartoKeyHint': 'تعرض خرائط CARTO الأساسية علامة مائية بدون مفتاح. مجاني وبدون حساب، من',
+  'settings.mapAmapJsKey': 'مفتاح Amap JS API',
+  'settings.mapAmapJsKeyHint':
+    'لخريطة Amap المتجهة. وهو مفتاح مختلف عن مفتاح «Web 服务» — أنشئه بنوع «Web端(JS API)» من',
+  'settings.mapAmapJsSecurity': 'رمز أمان Amap',
+  'settings.mapAmapJsSecurityHint':
+    'يُصدر مع مفتاح JS API منذ 2021. بدونه تُرفض كل طلبات الخريطة وتبقى الخلفية فارغة.',
   'settings.mapCartoKeyLink': 'مفتاح API لخرائط carto.com الأساسية',
   'settings.mapCartoKeyMissing':
     'هذا القالب خريطة أساسية من CARTO. بدون مفتاح تطبع CARTO عبارة "API KEY REQUIRED" على كل بلاطة. إلى أن تُدخل مفتاحًا، تعرض TREK الخريطة الأساسية الافتراضية بدلاً منها.',

@@ -41,6 +41,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → 访问令牌',
   'settings.mapCartoKey': 'CARTO API 密钥',
   'settings.mapCartoKeyHint': '没有密钥时 CARTO 底图会显示水印。免费且无需账户，来自',
+  'settings.mapAmapJsKey': '高德 JS API Key',
+  'settings.mapAmapJsKeyHint':
+    '用于「高德矢量」底图。和 Web 服务 Key 不是同一个 —— 要在控制台按「Web端(JS API)」类型新建，地址：',
+  'settings.mapAmapJsSecurity': '高德安全密钥',
+  'settings.mapAmapJsSecurityHint':
+    '2021 年起和 JS API Key 一起下发。不填的话地图发出的每个请求都会被拒绝，底图一片空白。',
   'settings.mapCartoKeyLink': 'carto.com 底图 API 密钥',
   'settings.mapCartoKeyMissing': '此模板是 CARTO 底图。没有密钥时，CARTO 会在每个瓦片上打上 "API KEY REQUIRED"。 在输入密钥之前，TREK 会显示默认底图。',
   'settings.mapStyle': '地图样式',

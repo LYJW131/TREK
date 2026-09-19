@@ -41,6 +41,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Token akses',
   'settings.mapCartoKey': 'Kunci API CARTO',
   'settings.mapCartoKeyHint': 'Peta dasar CARTO menampilkan tanda air tanpa kunci. Gratis, tanpa akun, dari',
+  'settings.mapAmapJsKey': 'Kunci JS API Amap',
+  'settings.mapAmapJsKeyHint':
+    'Untuk peta dasar vektor Amap. Kunci ini berbeda dari kunci «Web 服务» — buat dengan tipe «Web端(JS API)» di',
+  'settings.mapAmapJsSecurity': 'Kode keamanan Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Diterbitkan bersama kunci JS API sejak 2021. Tanpanya setiap permintaan peta ditolak dan peta dasar tetap kosong.',
   'settings.mapCartoKeyLink': 'kunci API peta dasar carto.com',
   'settings.mapCartoKeyMissing':
     'Templat ini adalah peta dasar CARTO. Tanpa kunci, CARTO mencetak "API KEY REQUIRED" di setiap ubin. Sampai kunci dimasukkan, TREK menampilkan peta dasar bawaan.',

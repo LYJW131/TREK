@@ -41,6 +41,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Tokeny dostępu',
   'settings.mapCartoKey': 'Klucz API CARTO',
   'settings.mapCartoKeyHint': 'Mapy podkładowe CARTO bez klucza pokazują znak wodny. Bezpłatny, bez konta, z',
+  'settings.mapAmapJsKey': 'Klucz JS API Amap',
+  'settings.mapAmapJsKeyHint':
+    'Do wektorowej mapy podkładowej Amap. To inny klucz niż «Web 服务» — utwórz go jako typ «Web端(JS API)» na',
+  'settings.mapAmapJsSecurity': 'Kod bezpieczeństwa Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Wydawany razem z kluczem JS API od 2021 roku. Bez niego każde żądanie mapy jest odrzucane, a podkład pozostaje pusty.',
   'settings.mapCartoKeyLink': 'klucz API map podkładowych carto.com',
   'settings.mapCartoKeyMissing':
     'Ten szablon to mapa podkładowa CARTO. Bez klucza CARTO nanosi "API KEY REQUIRED" na każdy kafelek. Dopóki nie podasz klucza, TREK pokazuje domyślną mapę podkładową.',

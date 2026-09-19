@@ -209,6 +209,16 @@ export interface Settings {
   roadtrip_battery_degradation?: number
   /** CARTO basemaps watermark keyless tiles; the key is appended as ?key= (#2054). */
   carto_api_key?: string
+  /**
+   * Amap's JS API key, and the 安全密钥 that has gone with it since 2021.
+   *
+   * A different key from the server's `AMAP_API_KEY`: that one is 「Web 服务」
+   * type, for place search and transit, and the JS API rejects it. This one is
+   * 「Web端(JS API)」 type and is public by design — it ships in the page, and
+   * Amap's protection for it is the domain allow-list set on the key itself.
+   */
+  amap_js_key?: string
+  amap_js_security_code?: string
   mapbox_access_token?: string
   mapbox_style?: string
   maplibre_style?: string

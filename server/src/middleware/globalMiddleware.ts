@@ -213,7 +213,15 @@ export function applyGlobalMiddleware(
         // means switching client/src/utils/convertHeic.ts over to it and
         // verifying a real .heic upload in a browser, not just deleting the
         // string here.
-        scriptSrc: ["'self'", "'wasm-unsafe-eval'", "'unsafe-eval'"],
+        scriptSrc: [
+          "'self'", "'wasm-unsafe-eval'", "'unsafe-eval'",
+          // Amap's JS API, for the vector basemap an install in China can pick.
+          // It is a script tag by design — there is no npm build of it — and it
+          // pulls its own modules from the same host, so the wildcard is the
+          // whole list. Missing, the basemap stays blank with a CSP violation
+          // and nothing the app can catch.
+          "https://*.amap.com",
+        ],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
         imgSrc: ["'self'", "data:", "blob:", "https:"],
         connectSrc: [
@@ -247,6 +255,9 @@ export function applyGlobalMiddleware(
           // satellite (webst01..04) are numbered shards of one domain, so the
           // wildcard is the whole list.
           "https://*.is.autonavi.com",
+          // The vector basemap's own traffic: the JS API fetches its styles,
+          // vector tiles and glyphs from webapi/vdata/restapi under this domain.
+          "https://*.amap.com",
           "https://unpkg.com", "https://open-meteo.com", "https://api.open-meteo.com",
           "https://geocoding-api.open-meteo.com", "https://api.frankfurter.dev",
           "https://router.project-osrm.org/route/v1/", "https://routing.openstreetmap.de/",

@@ -41,6 +41,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Token di accesso',
   'settings.mapCartoKey': 'Chiave API CARTO',
   'settings.mapCartoKeyHint': 'Le mappe base CARTO mostrano una filigrana senza chiave. Gratuita e senza account, da',
+  'settings.mapAmapJsKey': 'Chiave JS API di Amap',
+  'settings.mapAmapJsKeyHint':
+    'Per la mappa base vettoriale di Amap. È diversa dalla chiave «Web 服务»: creala come tipo «Web端(JS API)» su',
+  'settings.mapAmapJsSecurity': 'Codice di sicurezza Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Rilasciato insieme alla chiave JS API dal 2021. Senza, ogni richiesta della mappa viene rifiutata e la mappa base resta vuota.',
   'settings.mapCartoKeyLink': 'chiave API mappe base di carto.com',
   'settings.mapCartoKeyMissing':
     'Questo modello è una mappa base CARTO. Senza chiave, CARTO stampa "API KEY REQUIRED" su ogni tassello. Finché non inserisci una chiave, TREK mostra la mappa base predefinita.',

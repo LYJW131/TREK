@@ -12,7 +12,7 @@ import { GlMapPreviewMapbox, GlMapPreviewMaplibre } from '../Map/glLazy'
 import Section from './Section'
 import ToggleSwitch from './ToggleSwitch'
 import { withTileApiKey } from '../../utils/tileUrl'
-import { AMAP_ROAD, AMAP_SATELLITE } from '../../constants/mapDefaults'
+import { AMAP_GL, AMAP_ROAD, AMAP_SATELLITE } from '../../constants/mapDefaults'
 import type { Place } from '../../types'
 import {
   MAPBOX_DEFAULT_STYLE,
@@ -46,6 +46,11 @@ const MAP_PRESETS: MapPreset[] = [
   // basemap here that is genuinely good inside mainland China.
   { name: '高德地图 (Amap)', url: AMAP_ROAD },
   { name: '高德卫星 (Amap Satellite)', url: AMAP_SATELLITE },
+  // Amap's own SDK rather than its tiles. The only basemap here whose Chinese
+  // labels are sharp on a high-DPI screen — Amap publishes no 2x labelled
+  // raster tile, so every other Amap option is a 1x render scaled up. Needs a
+  // JS API key, which is why the two fields below appear with it.
+  { name: '高德矢量 (Amap Vector)', url: AMAP_GL },
 ]
 
 // Tag → chip color mapping. Keeps the dropdown readable at a glance so a
@@ -178,6 +183,8 @@ export default function MapSettingsTab(): React.ReactElement {
   const managed = useAuthStore((s) => s.managed)
   const [mapboxToken, setMapboxToken] = useState<string>(settings.mapbox_access_token || '')
   const [cartoKey, setCartoKey] = useState<string>(settings.carto_api_key || '')
+  const [amapJsKey, setAmapJsKey] = useState<string>(settings.amap_js_key || '')
+  const [amapJsSecurity, setAmapJsSecurity] = useState<string>(settings.amap_js_security_code || '')
   const [mapboxStyle, setMapboxStyle] = useState<string>(styleForProvider(initialProvider, slotStyle(initialProvider, settings)))
   const [mapbox3d, setMapbox3d] = useState<boolean>(settings.mapbox_3d_enabled !== false)
   const [mapboxQuality, setMapboxQuality] = useState<boolean>(settings.mapbox_quality_mode === true)
@@ -190,6 +197,8 @@ export default function MapSettingsTab(): React.ReactElement {
     setMapTileUrl(settings.map_tile_url || '')
     setMapboxToken(settings.mapbox_access_token || '')
     setCartoKey(settings.carto_api_key || '')
+    setAmapJsKey(settings.amap_js_key || '')
+    setAmapJsSecurity(settings.amap_js_security_code || '')
     setMapboxStyle(styleForProvider(nextProvider, slotStyle(nextProvider, settings)))
     setMapbox3d(settings.mapbox_3d_enabled !== false)
     setMapboxQuality(settings.mapbox_quality_mode === true)
@@ -225,6 +234,8 @@ export default function MapSettingsTab(): React.ReactElement {
         map_tile_url: mapTileUrl,
         mapbox_access_token: mapboxToken,
         carto_api_key: cartoKey,
+        amap_js_key: amapJsKey,
+        amap_js_security_code: amapJsSecurity,
         ...stylePatch,
         mapbox_3d_enabled: mapbox3d,
         mapbox_quality_mode: mapboxQuality,
@@ -360,6 +371,43 @@ export default function MapSettingsTab(): React.ReactElement {
           {cartoNeedsKey && (
             <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">{t('settings.mapCartoKeyMissing')}</p>
           )}
+        </div>
+      )}
+
+      {/* Only with the basemap that needs them: a JS API key is useless to every
+          other option here, and Amap issues it separately from the 「Web 服务」key
+          the place search and the transit backend use. */}
+      {provider === 'leaflet' && mapTileUrl.trim().toLowerCase() === AMAP_GL && (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('settings.mapAmapJsKey')}</label>
+            <input
+              type="text"
+              value={amapJsKey}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmapJsKey(e.target.value)}
+              spellCheck={false}
+              autoComplete="off"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+            />
+            <p className="text-xs text-slate-400 mt-1">
+              {t('settings.mapAmapJsKeyHint')}{' '}
+              <a href="https://console.amap.com/dev/key/app" target="_blank" rel="noreferrer" className="underline">
+                console.amap.com
+              </a>
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('settings.mapAmapJsSecurity')}</label>
+            <input
+              type="text"
+              value={amapJsSecurity}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmapJsSecurity(e.target.value)}
+              spellCheck={false}
+              autoComplete="off"
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+            />
+            <p className="text-xs text-slate-400 mt-1">{t('settings.mapAmapJsSecurityHint')}</p>
+          </div>
         </div>
       )}
 

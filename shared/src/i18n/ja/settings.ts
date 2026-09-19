@@ -41,6 +41,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Access tokens',
   'settings.mapCartoKey': 'CARTO API キー',
   'settings.mapCartoKeyHint': 'キーがないと CARTO のベースマップに透かしが入ります。無料でアカウントも不要、取得先:',
+  'settings.mapAmapJsKey': '高德 JS API キー',
+  'settings.mapAmapJsKeyHint':
+    'Amap のベクター地図用。「Web 服务」キーとは別のキーで、「Web端(JS API)」タイプで作成します。作成先：',
+  'settings.mapAmapJsSecurity': '高德 セキュリティコード（安全密钥）',
+  'settings.mapAmapJsSecurityHint':
+    '2021 年以降、JS API キーと一緒に発行されます。未設定だと地図のリクエストはすべて拒否され、背景地図は空白のままです。',
   'settings.mapCartoKeyLink': 'carto.com ベースマップ API キー',
   'settings.mapCartoKeyMissing':
     'このテンプレートは CARTO のベースマップです。キーがないと CARTO はすべてのタイルに "API KEY REQUIRED" を焼き込みます。 キーを入力するまで、TREK は既定のベースマップを表示します。',

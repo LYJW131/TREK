@@ -42,6 +42,12 @@ const settings: TranslationStrings = {
   'settings.mapMapboxTokenLink': 'mapbox.com → Access Tokens',
   'settings.mapCartoKey': 'CARTO-API-Key',
   'settings.mapCartoKeyHint': 'CARTO-Basiskarten zeigen ohne Key ein Wasserzeichen. Kostenlos und ohne Konto, unter',
+  'settings.mapAmapJsKey': 'Amap-JS-API-Schlüssel',
+  'settings.mapAmapJsKeyHint':
+    'Für die Amap-Vektorkarte. Ein anderer Schlüssel als der Web-服务-Schlüssel — als „Web端(JS API)" anlegen bei',
+  'settings.mapAmapJsSecurity': 'Amap-Sicherheitscode',
+  'settings.mapAmapJsSecurityHint':
+    'Wird seit 2021 zusammen mit dem JS-API-Schlüssel ausgegeben. Ohne ihn wird jede Anfrage der Karte abgelehnt und die Karte bleibt leer.',
   'settings.mapCartoKeyLink': 'carto.com Basemap-API-Key',
   'settings.mapCartoKeyMissing':
     'Diese Vorlage ist eine CARTO-Basiskarte. Ohne Key brennt CARTO "API KEY REQUIRED" in jede Kachel. Bis ein Key eingetragen ist, zeigt TREK die Standard-Basiskarte.',

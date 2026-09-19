@@ -43,6 +43,12 @@ const settings: TranslationStrings = {
   'settings.mapCartoKey': 'Ключ API CARTO',
   'settings.mapCartoKeyHint':
     'Без ключа базові карти CARTO показують водяний знак. Безкоштовно та без облікового запису, на',
+  'settings.mapAmapJsKey': 'Ключ JS API Amap',
+  'settings.mapAmapJsKeyHint':
+    'Для векторної підкладки Amap. Це не той ключ, що «Web 服务», — створіть його з типом «Web端(JS API)» на',
+  'settings.mapAmapJsSecurity': 'Код безпеки Amap',
+  'settings.mapAmapJsSecurityHint':
+    'Видається разом із ключем JS API з 2021 року. Без нього кожен запит карти відхиляється, а підкладка лишається порожньою.',
   'settings.mapCartoKeyLink': 'ключ API базових карт carto.com',
   'settings.mapCartoKeyMissing':
     'Цей шаблон є базовою картою CARTO. Без ключа CARTO наносить "API KEY REQUIRED" на кожен тайл. Доки ключ не вказано, TREK показує базову карту за замовчуванням.',
