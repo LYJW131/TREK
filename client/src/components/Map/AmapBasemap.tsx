@@ -60,10 +60,11 @@ const ZOOM_EPSILON = 1e-3
  * its camera really did move — this is not a visual trick, and `zoomend`
  * consumers like ReservationOverlay still see what they expect.
  *
- * The one interaction that has to travel the other way is a click on empty map:
- * it lands on Amap's canvas now, and MapView's MapClickHandler is what turns it
- * into "add a place here". It is forwarded below, converted out of GCJ-02 like
- * every other coordinate that crosses this file.
+ * What has to travel the other way is a press on empty map, both buttons: they
+ * land on Amap's canvas now, and MapView turns the left one into "clear the
+ * selection" and the right one into "add a place here". Both are forwarded
+ * below, converted out of GCJ-02 like every other coordinate crossing this
+ * file. A press on a marker needs nothing — markers paint above the canvas.
  */
 export function AmapBasemap() {
   const map = useMap()
@@ -181,14 +182,18 @@ export function AmapBasemap() {
         }
 
         /**
-         * A click on empty map, handed back to Leaflet.
+         * A press on empty map, handed back to Leaflet.
          *
-         * A click on a marker still reaches Leaflet on its own — markers paint
-         * above this canvas — so this is only the ground. `latlng` is what
-         * MapClickHandler reads; the container point and the original event come
-         * along so anything that looks at them sees the real ones.
+         * Both buttons matter and for different reasons. The left one is
+         * MapClickHandler, which only clears the selection. The right one is
+         * MapContextMenuHandler, which reads `e.latlng` and opens "add a place
+         * here" — so an unforwarded right-click is a feature that silently
+         * stops existing rather than a cosmetic loss.
+         *
+         * A press on a marker still reaches Leaflet by itself, because markers
+         * paint above this canvas; only the ground arrives here.
          */
-        const onAmapClick = (e: {
+        const forward = (type: 'click' | 'contextmenu') => (e: {
           lnglat?: { getLat(): number; getLng(): number }
           pixel?: { getX(): number; getY(): number }
           originalEvent?: MouseEvent
@@ -199,19 +204,24 @@ export function AmapBasemap() {
           const containerPoint = e.pixel
             ? L.point(e.pixel.getX(), e.pixel.getY())
             : map.latLngToContainerPoint(latlng)
-          map.fire('click', {
+          map.fire(type, {
             latlng,
             containerPoint,
             layerPoint: map.containerPointToLayerPoint(containerPoint),
-            originalEvent: e.originalEvent ?? new MouseEvent('click'),
+            // The handler calls preventDefault() on it to keep the browser's own
+            // menu away, so it has to be the real event whenever Amap gives one.
+            originalEvent: e.originalEvent ?? new MouseEvent(type),
           })
         }
+        const onAmapClick = forward('click')
+        const onAmapRightClick = forward('contextmenu')
 
         amap.on('mapmove', pushToLeaflet)
         amap.on('zoomchange', pushToLeaflet)
         amap.on('moveend', pushToLeaflet)
         amap.on('zoomend', pushToLeaflet)
         amap.on('click', onAmapClick)
+        amap.on('rightclick', onAmapRightClick)
         // Only the app's own camera moves need carrying the other way: a move
         // that came from Amap is already reflected, and `syncing` filters it.
         map.on('moveend zoomend resize', pushToAmap)
@@ -224,6 +234,7 @@ export function AmapBasemap() {
           amap.off('moveend', pushToLeaflet)
           amap.off('zoomend', pushToLeaflet)
           amap.off('click', onAmapClick)
+          amap.off('rightclick', onAmapRightClick)
           map.off('moveend zoomend resize', pushToAmap)
         }
       })
