@@ -128,4 +128,15 @@ describe('the Amap backdrop and the pointer', () => {
     expect(css).toContain(`.${AMAP_HOST_CLASS} *`)
     expect(css).toContain('touch-action: none')
   })
+
+  it('FE-UTIL-BASEMAP-016: a long-press only counts while the finger has stayed put', async () => {
+    const { PRESS_SLOP_PX } = await import('../components/Map/AmapBasemap')
+    // Amap reports a touch long-press as `rightclick` whether or not the finger
+    // moved, and that event opens the add-a-place form — so panning with a
+    // finger held down was writing rows nobody asked for. The slop is what
+    // separates "pressed" from "dragged"; zero would discard real presses on a
+    // touchscreen, where a finger always wanders a pixel or two.
+    expect(PRESS_SLOP_PX).toBeGreaterThan(0)
+    expect(PRESS_SLOP_PX).toBeLessThanOrEqual(16)
+  })
 })
